@@ -3,13 +3,18 @@ pre-commit:
   commands:
     prettier:
       run: 'npx prettier --write "{staged_files}"'
-      glob: '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'
+      glob: '**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss,html}'
+      exclude: '.github/workflows/categorize-tool.yml'
     eslint:
       run: 'npx eslint --fix "{staged_files}"'
       glob: 'src/**/*.{ts,tsx,js,jsx}'
     markdownlint:
       run: 'npx markdownlint-cli2 --fix "{staged_files}"'
       glob: '**/*.md'
+    yamllint:
+      run: 'npx yamllint "{staged_files}"'
+      glob: '**/*.{yml,yaml}'
+      exclude: '.github/workflows/categorize-tool.yml'
     typecheck:
       run: 'npm run typecheck'
       glob: '**/*.{ts,tsx}'

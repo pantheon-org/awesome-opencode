@@ -58,7 +58,7 @@ flowchart LR
 
 ## Directory Structure
 
-```
+```text
 awesome-opencode/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
@@ -93,12 +93,49 @@ awesome-opencode/
 
 ## Categories
 
+Categories are now **dynamically managed** through `categories.json`. This allows you to:
+
+- Add new categories without modifying workflow files
+- Maintain consistency across README and documentation
+- Automatically sync README with category definitions
+
+### Current Categories
+
+Categories are loaded from `categories.json`:
+
 1. **AI Coding Assistants** - AI-powered code completion and generation
 2. **Code Analysis & Quality** - Code quality and issue detection
 3. **Development Automation** - Workflow automation tools
 4. **Documentation Tools** - Code documentation generators
 5. **Testing Tools** - Automated testing and QA
 6. **IDE Extensions** - Editor extensions and plugins
+
+### Managing Categories
+
+**To add a new category:**
+
+1. Edit `categories.json` and add your new category:
+
+```json
+{
+  "categories": [
+    {
+      "slug": "your-new-category",
+      "title": "Your New Category",
+      "description": "Description of what this category includes."
+    }
+  ]
+}
+```
+
+1. Run the sync scripts:
+
+```bash
+bun run ensure:categories  # Creates the directory structure
+bun run sync:readme        # Updates README.md
+```
+
+1. Commit the changes - the workflows will automatically use the new category
 
 ## Key Features
 
@@ -191,11 +228,14 @@ awesome-opencode/
 
 Edit prompt in `triage-submission.yml` to adjust relevance criteria
 
-### Categories
+### Category Configuration
 
-1. Add category to README.md
-2. Update `categorize-tool.yml` prompt
-3. Create directory: `docs/new-category/`
+**Now Dynamic!** Categories are managed through `categories.json`:
+
+1. Add category to `categories.json`
+2. Run `bun run ensure:categories` to create directory
+3. Run `bun run sync:readme` to update README.md
+4. Workflows automatically load categories from `categories.json`
 
 ### Documentation Format
 
@@ -228,19 +268,19 @@ Adjust checks in `validate-and-merge.yml` "Validate markdown format" step
 
 ### Common Issues
 
-**Workflow not triggering**
+#### Workflow not triggering
 
 - Check Actions are enabled
 - Verify workflow files are in main
 - Confirm labels are correct
 
-**API errors**
+#### API errors
 
 - Verify OPENCODE_API_KEY is set
 - Check API quota
 - Review error logs
 
-**Merge failures**
+#### Merge failures
 
 - Check branch protection settings
 - Verify workflow permissions

@@ -1,0 +1,12 @@
+---
+# YAML Linting Configuration
+# https://github.com/rasshofer/yaml-lint
+
+# Schema validation is enabled by default
+schema: CORE_SCHEMA
+
+# Files to ignore
+ignore:
+  # GitHub workflow files may contain JavaScript template strings that appear invalid to YAML parsers
+  # but are processed correctly by GitHub Actions
+  - ".github/workflows/categorize-tool.yml"

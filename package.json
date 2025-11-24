@@ -14,8 +14,11 @@
     "lint:fix": "eslint 'src/**/*.{ts,tsx,js,jsx}' --fix",
     "lint:md": "markdownlint-cli2 '**/*.md' '#node_modules'",
     "lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
-    "format": "prettier --write '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'",
-    "format:check": "prettier --check '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'",
+    "lint:yaml": "yamllint '**/*.{yml,yaml}'",
+    "format": "prettier --write '**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss,html}'",
+    "format:check": "prettier --check '**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss,html}'",
+    "sync:readme": "bun run src/sync-readme.ts",
+    "ensure:categories": "bun run src/ensure-categories.ts",
     "clean": "rm -rf dist/ .bun-cache/ coverage/",
     "prepare": "lefthook install"
   },
@@ -43,7 +46,8 @@
     "eslint-plugin-tsdoc": "^0.4.0",
     "lefthook": "^2.0.4",
     "markdownlint-cli2": "^0.15.0",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "yaml-lint": "^1.7.0"
   },
   "dependencies": {}
 }

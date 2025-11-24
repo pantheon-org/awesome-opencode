@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "slug": "ai-coding-assistants",
+      "title": "AI Coding Assistants",
+      "description": "Tools that provide AI-powered code completion, generation, and assistance."
+    },
+    {
+      "slug": "code-analysis-quality",
+      "title": "Code Analysis & Quality",
+      "description": "Tools for analyzing code quality, detecting issues, and improving codebases."
+    },
+    {
+      "slug": "development-automation",
+      "title": "Development Automation",
+      "description": "Tools that automate development workflows and processes."
+    },
+    {
+      "slug": "documentation-tools",
+      "title": "Documentation Tools",
+      "description": "Tools for generating and managing code documentation."
+    },
+    {
+      "slug": "testing-tools",
+      "title": "Testing Tools",
+      "description": "Tools for automated testing and quality assurance."
+    },
+    {
+      "slug": "ide-extensions",
+      "title": "IDE Extensions",
+      "description": "Extensions and plugins for various IDEs and editors."
+    }
+  ]
+}
