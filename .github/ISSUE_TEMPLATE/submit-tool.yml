@@ -1,0 +1,40 @@
+name: Submit a Tool
+description: Submit a new tool to be added to the Awesome OpenCode list
+title: "[Tool Submission] "
+labels: ["submission", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for submitting a tool! Please provide the GitHub repository URL below.
+        
+  - type: input
+    id: repository_url
+    attributes:
+      label: GitHub Repository URL
+      description: The GitHub repository URL of the tool you want to submit
+      placeholder: https://github.com/username/repo
+    validations:
+      required: true
+      
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Additional Information (Optional)
+      description: Any additional context about why this tool is relevant
+      placeholder: This tool provides AI-powered code completion similar to OpenCode...
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Submission Guidelines
+      description: By submitting this tool, you confirm that
+      options:
+        - label: The tool is open source or publicly available
+          required: true
+        - label: The tool is actively maintained
+          required: true
+        - label: The tool is related to AI-powered coding assistance or similar development tools
+          required: true

@@ -1,0 +1,95 @@
+name: Validate and Merge PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'automated')
+    
+    steps:
+      - name: Post OpenCode validation request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body;
+            const issueMatch = prBody.match(/Closes #(\d+)/);
+            
+            if (!issueMatch) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `❌ **Error**: Could not find related issue in PR description.`
+              });
+              return;
+            }
+            
+            const issueNumber = issueMatch[1];
+            
+            // Get the files changed in this PR
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
+            const mdFiles = files.data.filter(f => f.filename.endsWith('.md') && f.filename.startsWith('docs/'));
+            
+            if (mdFiles.length === 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `❌ **Error**: No documentation files found in this PR.`
+              });
+              return;
+            }
+            
+            const docFile = mdFiles[0].filename;
+            const category = docFile.split('/')[1];
+            
+            const commentBody = `/opencode
+
+            This PR adds a new tool to the Awesome OpenCode list.
+
+            Your task is to:
+            1. Read and validate the documentation file at: ${docFile}
+               - Check that it has a proper heading
+               - Verify it has Repository and Description sections
+               - Ensure the markdown is well-formatted
+
+            2. Read the current README.md
+
+            3. Extract the tool name, description, and repository URL from ${docFile}
+
+            4. Update README.md by adding a new entry under the appropriate category section for "${category}"
+               - Format: - [Tool Name](repository_url) - Brief description
+               - Insert in alphabetical order within the category
+               - Maintain consistent formatting
+
+            5. Commit the updated README.md
+
+            6. If all validations pass:
+               - Add a comment to this PR: "✅ Validation passed - README updated"
+               - Merge this PR using squash merge
+               - Add a comment to issue #${issueNumber}: "🎉 Tool successfully added! Documentation: \`${docFile}\`"
+               - Close issue #${issueNumber}
+
+            7. If any validation fails:
+               - Add a comment explaining what needs to be fixed
+               - Do not merge`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: commentBody
+            });

@@ -1,0 +1,104 @@
+name: Categorize and Document Tool
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  categorize:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'in-review'
+    
+    steps:
+      - name: Post OpenCode categorization request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body;
+            const urlMatch = body.match(/https:\/\/github\.com\/[^\s\)]+/);
+            
+            if (!urlMatch) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `❌ **Error**: No GitHub repository URL found. Cannot proceed with categorization.`
+              });
+              return;
+            }
+            
+            const repoUrl = urlMatch[0];
+            const repoPath = repoUrl.replace('https://github.com/', '');
+            const repoName = repoPath.split('/').pop();
+            
+            const commentBody = `/opencode
+
+            Analyze the GitHub repository at: ${repoUrl}
+
+            Your task is to:
+            1. Categorize this tool into one of these categories:
+               - ai-coding-assistants: Tools that provide AI-powered code completion, generation, and assistance
+               - code-analysis-quality: Tools for analyzing code quality, detecting issues, and improving codebases
+               - development-automation: Tools that automate development workflows and processes
+               - documentation-tools: Tools for generating and managing code documentation
+               - testing-tools: Tools for automated testing and quality assurance
+               - ide-extensions: Extensions and plugins for various IDEs and editors
+
+            2. Create comprehensive documentation for this tool
+
+            3. Respond with a JSON code block containing:
+
+            \`\`\`json
+            {
+              "category": "category-slug",
+              "category_title": "Category Title",
+              "tool_name": "Tool Name",
+              "description": "One-line description (max 150 chars)",
+              "summary": "## Overview\\n\\nDetailed markdown summary with key features, use cases, and technical details...",
+              "tags": ["tag1", "tag2", "tag3"]
+            }
+            \`\`\`
+
+            After providing the JSON:
+            1. Create a new branch named "add-tool-${context.issue.number}"
+            2. Create the file docs/{category}/{repoName}.md with this content:
+
+            \`\`\`markdown
+            # {tool_name}
+
+            **Repository:** [${repoUrl}](${repoUrl})
+
+            **Description:** {description}
+
+            {summary}
+
+            ## Links
+
+            - [GitHub Repository](${repoUrl})
+            - [Issues](${repoUrl}/issues)
+
+            ---
+
+            *Last updated: ${new Date().toISOString().split('T')[0]}*
+            \`\`\`
+
+            3. Commit the file
+            4. Open a PR with:
+               - Title: "Add {tool_name} to {category_title}"
+               - Body including: Closes #${context.issue.number}
+               - Label: "automated", "documentation"
+
+            5. Add label "accepted" to this issue and remove "in-review"
+            6. Post a comment on this issue confirming the PR was created`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });

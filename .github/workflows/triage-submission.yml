@@ -1,0 +1,68 @@
+name: Triage Tool Submission
+
+on:
+  issues:
+    types: [opened, reopened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'submission')
+    
+    steps:
+      - name: Post OpenCode triage request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body;
+            const urlMatch = body.match(/https:\/\/github\.com\/[^\s\)]+/);
+            
+            if (!urlMatch) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `❌ **Error**: No GitHub repository URL found in the issue body. Please edit the issue and include a valid GitHub URL.`
+              });
+              core.setFailed('No GitHub repository URL found in issue body');
+              return;
+            }
+            
+            const repoUrl = urlMatch[0];
+            
+            // Post the OpenCode command
+            const commentBody = `/opencode
+
+            Analyze the GitHub repository at: ${repoUrl}
+
+            Determine if this tool is relevant for an "Awesome OpenCode" list. The tool should be:
+            1. Related to AI-powered coding assistance (like OpenCode, GitHub Copilot, Cursor, etc.)
+            2. OR a tool that significantly overlaps in functionality with AI coding assistants
+            3. OR a development tool that uses AI to enhance developer productivity
+
+            Respond with a JSON code block in this exact format, followed by your analysis:
+
+            \`\`\`json
+            {
+              "relevant": true,
+              "reason": "Brief explanation of why this tool is or isn't relevant",
+              "confidence": "high"
+            }
+            \`\`\`
+
+            After providing the JSON and analysis:
+            1. If relevant is true: Add the label "in-review" and remove "needs-triage"
+            2. If relevant is false: Add the label "rejected", remove "needs-triage", and close this issue
+
+            Then post a follow-up comment summarizing your decision.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
