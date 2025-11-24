@@ -9,11 +9,14 @@ and similar AI-powered coding assistants.
 
 ### Workflow Pipeline
 
-```
-Issue Created → Triage → Categorize → Document → Validate → Merge → Close
-     ↓            ↓          ↓           ↓          ↓         ↓       ↓
-  Template    OpenCode   OpenCode    Create PR   Update   Auto-   Close
-  Validation  Analysis   Analysis              README.md  Merge   Issue
+```mermaid
+flowchart LR
+    A[Issue Created<br/>Template Validation] --> B[Triage<br/>OpenCode Analysis]
+    B --> C[Categorize<br/>OpenCode Analysis]
+    C --> D[Document<br/>Create PR]
+    D --> E[Validate<br/>Update README.md]
+    E --> F[Merge<br/>Auto-Merge]
+    F --> G[Close<br/>Close Issue]
 ```
 
 ### Components

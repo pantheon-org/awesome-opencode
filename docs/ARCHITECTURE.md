@@ -21,12 +21,10 @@ on:
 
 **How it works:**
 
-
 - Listens for comments containing `/opencode` or `/oc`
 - Runs OpenCode agent with Claude Sonnet 4
 - OpenCode can read context, make changes, create branches, and interact with GitHub API
 - All AI operations happen through this workflow
-
 
 **Key Features:**
 
@@ -43,24 +41,18 @@ Three orchestration workflows trigger OpenCode commands at the right times:
 
 **Trigger:** Issue opened with `submission` label
 
-
 **Flow:**
 
-```
-Issue Created
-    ↓
-Extract URL
-    ↓
-Post /opencode comment with triage instructions
-    ↓
-OpenCode analyzes repository
-    ↓
-OpenCode adds labels (in-review or rejected)
-    ↓
-OpenCode posts decision comment
-    ↓
-If rejected: OpenCode closes issue
-
+```mermaid
+flowchart TD
+    A[Issue Created] --> B[Extract URL]
+    B --> C[Post /opencode comment with triage instructions]
+    C --> D[OpenCode analyzes repository]
+    D --> E[OpenCode adds labels]
+    E --> F[OpenCode posts decision comment]
+    F --> G{Decision}
+    G -->|Rejected| H[OpenCode closes issue]
+    G -->|Accepted| I[Label as in-review]
 ```
 
 **OpenCode Instructions:**
@@ -73,30 +65,20 @@ If rejected: OpenCode closes issue
 
 #### B. Categorize Tool (`.github/workflows/categorize-tool.yml`)
 
-
 **Trigger:** Issue labeled with `in-review`
 
 **Flow:**
 
-```
-Issue labeled "in-review"
-    ↓
-Post /opencode comment with categorization instructions
-    ↓
-OpenCode analyzes tool deeply
-    ↓
-OpenCode determines category
-    ↓
-OpenCode creates new branch
-    ↓
-OpenCode creates docs/<category>/<tool>.md
-    ↓
-OpenCode commits file
-    ↓
-OpenCode opens PR
-
-    ↓
-OpenCode updates issue labels (accepted)
+```mermaid
+flowchart TD
+    A[Issue labeled in-review] --> B[Post /opencode comment with categorization instructions]
+    B --> C[OpenCode analyzes tool deeply]
+    C --> D[OpenCode determines category]
+    D --> E[OpenCode creates new branch]
+    E --> F[OpenCode creates docs/category/tool.md]
+    F --> G[OpenCode commits file]
+    G --> H[OpenCode opens PR]
+    H --> I[OpenCode updates issue labels to accepted]
 ```
 
 **OpenCode Instructions:**
@@ -108,32 +90,22 @@ OpenCode updates issue labels (accepted)
 - Open PR linking to issue
 - Update issue labels
 
-
 #### C. Validate and Merge (`.github/workflows/validate-and-merge.yml`)
 
 **Trigger:** PR opened with `automated` label
 
 **Flow:**
 
-```
-PR Created
-    ↓
-Post /opencode comment with validation instructions
-    ↓
-OpenCode reads documentation file
-    ↓
-OpenCode validates markdown format
-    ↓
-OpenCode reads README.md
-    ↓
-OpenCode updates README with new entry
-    ↓
-OpenCode commits README
-
-    ↓
-OpenCode merges PR
-    ↓
-OpenCode closes related issue
+```mermaid
+flowchart TD
+    A[PR opened with automated label] --> B[Post /opencode comment with validation instructions]
+    B --> C[OpenCode reads documentation file]
+    C --> D[OpenCode validates markdown format]
+    D --> E[OpenCode reads README.md]
+    E --> F[OpenCode updates README with new entry]
+    F --> G[OpenCode commits README]
+    G --> H[OpenCode merges PR]
+    H --> I[OpenCode closes related issue]
 ```
 
 **OpenCode Instructions:**
@@ -147,8 +119,20 @@ OpenCode closes related issue
 
 ## Data Flow
 
-### Complete Submission Flow
-
+```mermaid
+flowchart TD
+    A[User Opens Issue<br/>with GitHub URL] --> B[triage-submission<br/>workflow runs]
+    B --> C[Posts /opencode<br/>triage command]
+    C --> D[opencode workflow<br/>executes agent]
+    D --> E{Decision}
+    E -->|Relevant| F[Label as in-review]
+    E -->|Rejected| G[Close Issue]
+    F --> H[categorize-tool<br/>workflow runs]
+    H --> I[Posts /opencode<br/>categorize command]
+    I --> J[opencode creates<br/>branch, file, PR]
+    J --> K[validate-and-merge<br/>workflow runs]
+    K --> L[Posts /opencode<br/>validate command]
+    L --> M[opencode validates,<br/>updates README,<br/>merges, closes]
 ```
 ┌─────────────────────┐
 │  User Opens Issue   │
@@ -226,7 +210,6 @@ OpenCode closes related issue
 
 **OpenCode Workflow:**
 
-
 ```yaml
 permissions:
   id-token: write # For authentication
@@ -277,7 +260,6 @@ permissions:
 
 **Solution:** Workflows post `/opencode` comments with detailed instructions
 
-
 **Benefits:**
 
 - Automatic triggering at the right lifecycle points
@@ -290,7 +272,6 @@ permissions:
 **Why:** Complex workflow broken into discrete stages
 
 **Stages:**
-
 
 1. Triage (filter)
 2. Categorize (analyze and document)
@@ -322,13 +303,11 @@ permissions:
 - Enables workflow triggers
 - Human-readable status
 
-
 ## Customization Points
 
 ### 1. AI Model
 
 Change in `opencode.yml`:
-
 
 ```yaml
 with:
@@ -336,7 +315,6 @@ with:
 ```
 
 Options: Any model supported by OpenCode
-
 
 ### 2. Categories
 
@@ -367,11 +345,9 @@ Edit in `categorize-tool.yml` comment:
 
 ### Check Workflow Runs
 
-
 1. Go to **Actions** tab
 2. Select a workflow
 3. View logs for each step
-
 
 ### Debug OpenCode
 
