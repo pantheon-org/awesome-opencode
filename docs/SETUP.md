@@ -18,6 +18,7 @@ This guide explains how to set up the Awesome OpenCode repository with automated
 4. Grant the required permissions
 
 Alternatively, run this command in your repository:
+
 ```bash
 opencode github install
 ```
@@ -66,6 +67,7 @@ For the `main` branch:
 **Trigger:** When an issue is opened with the `submission` label
 
 **Process:**
+
 1. Extracts the GitHub repository URL from the issue
 2. Posts a `/opencode` comment with instructions to:
    - Analyze if the tool is relevant
@@ -80,6 +82,7 @@ For the `main` branch:
 **Trigger:** When an issue is labeled with `in-review`
 
 **Process:**
+
 1. Posts a `/opencode` comment with instructions to:
    - Categorize the tool
    - Create comprehensive documentation
@@ -94,6 +97,7 @@ For the `main` branch:
 **Trigger:** When a PR is opened with the `automated` label
 
 **Process:**
+
 1. Posts a `/opencode` comment with instructions to:
    - Validate markdown documentation
    - Update README.md with the new tool entry
@@ -174,9 +178,10 @@ Modify the `/opencode` comment template in `.github/workflows/categorize-tool.ym
 ### Changing the AI Model
 
 Edit `.github/workflows/opencode.yml` to change the model:
+
 ```yaml
 with:
-  model: anthropic/claude-sonnet-4-20250514  # Change this line
+  model: anthropic/claude-sonnet-4-20250514 # Change this line
 ```
 
 Available models: See [OpenCode Providers documentation](https://opencode.ai/docs/providers/)

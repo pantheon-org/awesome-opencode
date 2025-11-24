@@ -5,11 +5,12 @@
 ### Initial Setup (5-10 minutes)
 
 1. **Configure GitHub Repository**
+
    ```bash
    # Clone the repository
    git clone https://github.com/pantheon-org/awesome-opencode.git
    cd awesome-opencode
-   
+
    # Push to your GitHub repository
    git remote set-url origin https://github.com/your-username/awesome-opencode.git
    git push -u origin main
@@ -20,8 +21,9 @@
    - Click **Install**
    - Select your repository
    - Grant required permissions
-   
+
    OR use CLI:
+
    ```bash
    opencode github install
    ```
@@ -48,7 +50,7 @@
    - Use a known AI coding tool (e.g., `https://github.com/getcursor/cursor`)
    - Watch the automation work!
 
-### Done!
+### Done
 
 Your automated curation system is now live. Any tool submissions will be automatically triaged, documented, and merged.
 
@@ -82,6 +84,7 @@ Your automated curation system is now live. Any tool submissions will be automat
 ### What Happens Next?
 
 **If Approved:**
+
 - Issue labeled `in-review`
 - Tool gets categorized
 - Documentation created
@@ -91,6 +94,7 @@ Your automated curation system is now live. Any tool submissions will be automat
 - Issue closed with success message
 
 **If Rejected:**
+
 - Issue labeled `rejected`
 - Explanation provided
 - Issue closed
@@ -127,6 +131,7 @@ Your automated curation system is now live. Any tool submissions will be automat
 ## Examples
 
 ### Good Submission
+
 ```
 Repository URL: https://github.com/features/copilot
 Additional Info: GitHub's AI pair programmer, directly competitive with OpenCode
@@ -135,6 +140,7 @@ Additional Info: GitHub's AI pair programmer, directly competitive with OpenCode
 **Result:** Approved → Categorized as "AI Coding Assistants" → Merged
 
 ### Marginal Submission
+
 ```
 Repository URL: https://github.com/prettier/prettier
 Additional Info: Code formatter used by developers
@@ -143,6 +149,7 @@ Additional Info: Code formatter used by developers
 **Result:** May be rejected (not AI-powered or directly related)
 
 ### Bad Submission
+
 ```
 Repository URL: https://github.com/user/personal-notes
 Additional Info: My notes about coding
@@ -157,6 +164,7 @@ Additional Info: My notes about coding
 ### How do I know if my tool will be accepted?
 
 Tools should be:
+
 - Related to AI-powered coding assistance
 - OR overlap significantly with AI coding tools
 - OR use AI to enhance developer productivity
@@ -189,6 +197,7 @@ The system will process it, but during PR review, duplicate detection will preve
 
 **Wait time:** Usually < 1 minute
 **Check:**
+
 - Does the issue have the `submission` label?
 - Is GitHub Actions enabled?
 - Check the Actions tab for errors
@@ -196,6 +205,7 @@ The system will process it, but during PR review, duplicate detection will preve
 ### The PR wasn't created
 
 **Possible reasons:**
+
 - Tool was rejected during triage
 - Check issue comments for explanation
 - Workflow may have encountered an error (check Actions tab)
@@ -203,9 +213,10 @@ The system will process it, but during PR review, duplicate detection will preve
 ### Need Help?
 
 Open an issue with:
+
 - **Label:** `question` or `bug`
 - **Title:** Brief description of your problem
-- **Body:** 
+- **Body:**
   - What you were trying to do
   - What happened
   - Any error messages
@@ -216,18 +227,21 @@ Open an issue with:
 ## Next Steps
 
 ### After Setup
+
 1. Test with a known tool
 2. Invite contributors
 3. Share the repository
 4. Monitor submissions
 
 ### Growing Your List
+
 1. Share on social media
 2. Add to awesome-lists
 3. Engage with the community
 4. Keep the list updated
 
 ### Maintenance
+
 - Check weekly for issues
 - Review rejections monthly
 - Update categories as needed

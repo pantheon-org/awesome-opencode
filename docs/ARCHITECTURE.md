@@ -20,12 +20,16 @@ on:
 ```
 
 **How it works:**
+
+
 - Listens for comments containing `/opencode` or `/oc`
 - Runs OpenCode agent with Claude Sonnet 4
 - OpenCode can read context, make changes, create branches, and interact with GitHub API
 - All AI operations happen through this workflow
 
+
 **Key Features:**
+
 - Full repository access
 - Can create/modify files
 - Can manage issues and PRs
@@ -39,7 +43,9 @@ Three orchestration workflows trigger OpenCode commands at the right times:
 
 **Trigger:** Issue opened with `submission` label
 
+
 **Flow:**
+
 ```
 Issue Created
     ↓
@@ -54,9 +60,11 @@ OpenCode adds labels (in-review or rejected)
 OpenCode posts decision comment
     ↓
 If rejected: OpenCode closes issue
+
 ```
 
 **OpenCode Instructions:**
+
 - Analyze if tool is relevant to AI coding assistance
 - Provide JSON response with decision
 - Add appropriate labels
@@ -65,9 +73,11 @@ If rejected: OpenCode closes issue
 
 #### B. Categorize Tool (`.github/workflows/categorize-tool.yml`)
 
+
 **Trigger:** Issue labeled with `in-review`
 
 **Flow:**
+
 ```
 Issue labeled "in-review"
     ↓
@@ -84,11 +94,13 @@ OpenCode creates docs/<category>/<tool>.md
 OpenCode commits file
     ↓
 OpenCode opens PR
+
     ↓
 OpenCode updates issue labels (accepted)
 ```
 
 **OpenCode Instructions:**
+
 - Categorize into one of 6 predefined categories
 - Generate comprehensive documentation
 - Create branch named `add-tool-{issue_number}`
@@ -96,11 +108,13 @@ OpenCode updates issue labels (accepted)
 - Open PR linking to issue
 - Update issue labels
 
+
 #### C. Validate and Merge (`.github/workflows/validate-and-merge.yml`)
 
 **Trigger:** PR opened with `automated` label
 
 **Flow:**
+
 ```
 PR Created
     ↓
@@ -115,6 +129,7 @@ OpenCode reads README.md
 OpenCode updates README with new entry
     ↓
 OpenCode commits README
+
     ↓
 OpenCode merges PR
     ↓
@@ -122,6 +137,7 @@ OpenCode closes related issue
 ```
 
 **OpenCode Instructions:**
+
 - Validate documentation format
 - Extract tool information
 - Update README.md alphabetically
@@ -200,6 +216,7 @@ OpenCode closes related issue
 │ opencode validates, │
 │ updates README,     │
 │ merges, closes      │
+
 └─────────────────────┘
 ```
 
@@ -208,18 +225,21 @@ OpenCode closes related issue
 ### Permissions
 
 **OpenCode Workflow:**
+
+
 ```yaml
 permissions:
-  id-token: write      # For authentication
-  contents: write      # To create/modify files
+  id-token: write # For authentication
+  contents: write # To create/modify files
   pull-requests: write # To manage PRs
-  issues: write        # To manage issues
+  issues: write # To manage issues
 ```
 
 **Orchestration Workflows:**
+
 ```yaml
 permissions:
-  issues: write        # To add comments
+  issues: write # To add comments
   contents: read/write # To checkout code
   pull-requests: write # For PR workflows
 ```
@@ -233,6 +253,7 @@ permissions:
 
 - OpenCode runs in GitHub Actions runner (isolated environment)
 - Only processes commands from issue/PR comments
+
 - All changes are committed with GitHub Actions bot identity
 - Requires OpenCode GitHub App installation
 
@@ -243,7 +264,9 @@ permissions:
 **Why:** OpenCode GitHub integration works via `/opencode` commands in comments
 
 **Benefits:**
+
 - Leverages official OpenCode integration
+
 - Transparent - all AI actions visible in comments
 - Auditable - full history in issue/PR timeline
 - Debuggable - can see exactly what OpenCode was asked to do
@@ -254,9 +277,12 @@ permissions:
 
 **Solution:** Workflows post `/opencode` comments with detailed instructions
 
+
 **Benefits:**
+
 - Automatic triggering at the right lifecycle points
 - Structured instructions for consistent behavior
+
 - Separation of concerns (trigger vs execution)
 
 ### 3. Multi-Stage Process
@@ -264,12 +290,16 @@ permissions:
 **Why:** Complex workflow broken into discrete stages
 
 **Stages:**
+
+
 1. Triage (filter)
 2. Categorize (analyze and document)
 3. Validate and Merge (quality control)
 
 **Benefits:**
+
 - Each stage can fail independently
+
 - Clear checkpoints for manual intervention
 - Progressive refinement of data
 - Better error handling
@@ -277,23 +307,29 @@ permissions:
 ### 4. Label-Based State Machine
 
 **States:**
+
 - `submission` → Initial state
 - `needs-triage` → Awaiting triage
+
 - `in-review` → Approved, awaiting categorization
 - `accepted` → Documented, awaiting merge
 - `rejected` → Not relevant, closed
 
 **Benefits:**
+
 - Clear state transitions
 - Easy to track progress
 - Enables workflow triggers
 - Human-readable status
+
 
 ## Customization Points
 
 ### 1. AI Model
 
 Change in `opencode.yml`:
+
+
 ```yaml
 with:
   model: anthropic/claude-sonnet-4-20250514
@@ -301,9 +337,11 @@ with:
 
 Options: Any model supported by OpenCode
 
+
 ### 2. Categories
 
 Modify in `categorize-tool.yml` comment:
+
 - Add new categories to the list
 - Create corresponding docs directory
 - Update README.md with new section
@@ -311,6 +349,7 @@ Modify in `categorize-tool.yml` comment:
 ### 3. Triage Criteria
 
 Edit in `triage-submission.yml` comment:
+
 - Modify relevance criteria
 - Adjust confidence thresholds
 - Change decision logic
@@ -318,17 +357,21 @@ Edit in `triage-submission.yml` comment:
 ### 4. Documentation Format
 
 Edit in `categorize-tool.yml` comment:
+
 - Change markdown template
 - Add/remove sections
+
 - Modify metadata
 
 ## Monitoring and Debugging
 
 ### Check Workflow Runs
 
+
 1. Go to **Actions** tab
 2. Select a workflow
 3. View logs for each step
+
 
 ### Debug OpenCode
 
@@ -340,16 +383,19 @@ Edit in `categorize-tool.yml` comment:
 ### Common Issues
 
 **OpenCode not responding:**
+
 - Check GitHub App is installed
 - Verify ANTHROPIC_API_KEY is set
 - Ensure comment has `/opencode` or `/oc`
 
 **Wrong behavior:**
+
 - Review the instruction comment
 - Adjust prompt in workflow file
 - Test with manual `/opencode` comment
 
 **Workflow not triggering:**
+
 - Check issue has correct label
 - Verify workflow permissions
 - Ensure workflows are in main branch
