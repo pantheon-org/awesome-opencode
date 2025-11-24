@@ -24,8 +24,8 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
       
-      - name: Load categories
-        id: load-categories
+      - name: Load categories and prompt
+        id: load-data
         run: |
           CATEGORIES=$(cat categories.json | jq -c '.categories')
           echo "categories=$CATEGORIES" >> $GITHUB_OUTPUT
@@ -35,11 +35,18 @@ jobs:
           echo "categories_prompt<<EOF" >> $GITHUB_OUTPUT
           echo "$CATEGORIES_PROMPT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Load prompt template
+          PROMPT_TEMPLATE=$(cat .github/prompts/categorize-tool.md)
+          echo "prompt_template<<EOF" >> $GITHUB_OUTPUT
+          echo "$PROMPT_TEMPLATE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       
       - name: Post OpenCode categorization request
         uses: actions/github-script@v7
         env:
-          CATEGORIES_PROMPT: ${{ steps.load-categories.outputs.categories_prompt }}
+          CATEGORIES_PROMPT: ${{ steps.load-data.outputs.categories_prompt }}
+          PROMPT_TEMPLATE: ${{ steps.load-data.outputs.prompt_template }}
         with:
           script: |
             const body = context.payload.issue.body;
@@ -58,63 +65,17 @@ jobs:
             const repoUrl = urlMatch[0];
             const repoPath = repoUrl.replace('https://github.com/', '');
             const repoName = repoPath.split('/').pop();
-            
             const categoriesPrompt = process.env.CATEGORIES_PROMPT;
+            const currentDate = new Date().toISOString().split('T')[0];
             
-            const commentBody = `/opencode
-
-            Analyze the GitHub repository at: ` + repoUrl + `
-
-            Your task is to:
-            1. Categorize this tool into one of these categories (loaded dynamically from categories.json):
-` + categoriesPrompt + `
-
-            2. Create comprehensive documentation for this tool
-
-            3. Respond with a JSON code block containing:
-
-            \`\`\`json
-            {
-              "category": "category-slug",
-              "category_title": "Category Title",
-              "tool_name": "Tool Name",
-              "description": "One-line description (max 150 chars)",
-              "summary": "## Overview\\n\\nDetailed markdown summary with key features, use cases, and technical details...",
-              "tags": ["tag1", "tag2", "tag3"]
-            }
-            \`\`\`
-
-            After providing the JSON:
-            1. Create a new branch named "add-tool-` + context.issue.number + `"
-            2. Create the file docs/{category}/{repoName}.md with this content (note: create the category directory if it doesn't exist):
-
-            \`\`\`markdown
-            # {tool_name}
-
-            **Repository:** [` + repoUrl + `](` + repoUrl + `)
-
-            **Description:** {description}
-
-            {summary}
-
-            ## Links
-
-            - [GitHub Repository](` + repoUrl + `)
-            - [Issues](` + repoUrl + `/issues)
-
-            ---
-
-            *Last updated: ` + new Date().toISOString().split('T')[0] + `*
-            \`\`\`
-
-            3. Commit the file
-            4. Open a PR with:
-               - Title: "Add {tool_name} to {category_title}"
-               - Body including: Closes #` + context.issue.number + `
-               - Label: "automated", "documentation"
-
-            5. Add label "accepted" to this issue and remove "in-review"
-            6. Post a comment on this issue confirming the PR was created`;
+            // Load and populate the prompt template
+            const promptTemplate = process.env.PROMPT_TEMPLATE;
+            const commentBody = promptTemplate
+              .replace(/\{\{REPO_URL\}\}/g, repoUrl)
+              .replace(/\{\{CATEGORIES_PROMPT\}\}/g, categoriesPrompt)
+              .replace(/\{\{ISSUE_NUMBER\}\}/g, context.issue.number)
+              .replace(/\{\{REPO_NAME\}\}/g, repoName)
+              .replace(/\{\{CURRENT_DATE\}\}/g, currentDate);
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
