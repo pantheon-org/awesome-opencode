@@ -12,9 +12,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx,js,jsx}' --fix",
+    "lint:md": "markdownlint-cli2 '**/*.md' '#node_modules'",
+    "lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '#node_modules'",
     "format": "prettier --write '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'",
     "format:check": "prettier --check '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'",
-    "clean": "rm -rf dist/ .bun-cache/ coverage/"
+    "clean": "rm -rf dist/ .bun-cache/ coverage/",
+    "prepare": "lefthook install"
   },
   "keywords": [
     "opencode",
@@ -38,6 +41,8 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-sonarjs": "^0.16.0",
     "eslint-plugin-tsdoc": "^0.4.0",
+    "lefthook": "^2.0.4",
+    "markdownlint-cli2": "^0.15.0",
     "prettier": "^3.6.2"
   },
   "dependencies": {}

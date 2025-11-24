@@ -1,0 +1,28 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      run: 'npx prettier --write "{staged_files}"'
+      glob: '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'
+    eslint:
+      run: 'npx eslint --fix "{staged_files}"'
+      glob: 'src/**/*.{ts,tsx,js,jsx}'
+    markdownlint:
+      run: 'npx markdownlint-cli2 --fix "{staged_files}"'
+      glob: '**/*.md'
+    typecheck:
+      run: 'npm run typecheck'
+      glob: '**/*.{ts,tsx}'
+    test:
+      run: 'bun test "{staged_files}"'
+      glob: '**/*.{spec.ts,spec.tsx,spec.js,spec.jsx,test.ts,test.tsx,test.js,test.jsx}'
+
+pre-push:
+  parallel: false
+  commands:
+    typecheck:
+      run: 'npm run typecheck'
+    test:
+      run: 'bun test src/'
+    markdown:
+      run: 'npm run lint:md'

@@ -71,11 +71,21 @@ awesome-opencode/
 │   ├── documentation-tools/          # Category: Documentation
 │   ├── testing-tools/                # Category: Testing
 │   ├── ide-extensions/               # Category: IDE extensions
+│   ├── ARCHITECTURE.md               # Technical architecture
+│   ├── PROJECT.md                    # This file - Project overview
+│   ├── QUICKSTART.md                 # Quick start guide
+│   ├── SETUP.md                      # Setup and configuration guide
 │   └── README.md                     # Docs directory info
+├── src/
+│   └── index.ts                      # Main TypeScript entry point
 ├── .gitignore                        # Git ignore rules
 ├── LICENSE                           # CC0 License
 ├── README.md                         # Main project readme
-└── SETUP.md                          # Setup and configuration guide
+├── package.json                      # Project dependencies and scripts
+├── tsconfig.json                     # TypeScript configuration
+├── eslint.config.cjs                 # ESLint configuration
+├── .prettierrc                       # Prettier configuration
+└── lefthook.yml                      # Git hooks configuration
 ```
 
 ## Categories
@@ -262,7 +272,7 @@ When modifying workflows:
 2. Use small test cases
 3. Monitor API usage
 4. Document changes
-5. Update SETUP.md if needed
+5. Update docs/SETUP.md if needed
 
 ## Links
 
