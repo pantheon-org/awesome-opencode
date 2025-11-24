@@ -1,0 +1,44 @@
+{
+  "name": "awesome-opencode",
+  "version": "0.0.1",
+  "description": "Automated curation system for OpenCode and AI coding tools",
+  "type": "module",
+  "scripts": {
+    "dev": "bun dev",
+    "start": "bun run src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx,js,jsx}' --fix",
+    "format": "prettier --write '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'",
+    "format:check": "prettier --check '**/*.{ts,tsx,js,jsx,json,md,css,scss,html}'",
+    "clean": "rm -rf dist/ .bun-cache/ coverage/"
+  },
+  "keywords": [
+    "opencode",
+    "ai-coding-tools",
+    "automation",
+    "curation"
+  ],
+  "author": "",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "bun-types": "^1.2.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^3.5.2",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-jsdoc": "^61.4.0",
+    "eslint-plugin-prefer-arrow": "^1.2.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-sonarjs": "^0.16.0",
+    "eslint-plugin-tsdoc": "^0.4.0",
+    "prettier": "^3.6.2"
+  },
+  "dependencies": {}
+}
