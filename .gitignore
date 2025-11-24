@@ -35,6 +35,3 @@ logs/
 
 # Bun cache
 .bun-cache/
-
-# Context (project-specific)
-.context/
