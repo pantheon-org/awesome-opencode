@@ -111,12 +111,14 @@ const prompt = formatCategoriesForPrompt();
 ## Migration from Static
 
 **Before:**
+
 - Categories hardcoded in README.md
 - Categories hardcoded in categorize-tool.yml
 - Manual directory creation
 - Inconsistencies between docs and workflows
 
 **After:**
+
 - Single `categories.json` file
 - Workflows load dynamically
 - Automated scripts for sync
@@ -175,10 +177,120 @@ The warnings are cosmetic and caused by the YAML linter not understanding JavaSc
 ## Questions?
 
 See `docs/DYNAMIC-CATEGORIES.md` for:
+
 - Detailed usage examples
 - Troubleshooting guide
 - Best practices
 - Migration notes
+
+## Phase 2: Theme-Based Categorization (2025-11-24)
+
+Successfully implemented dynamic theme-based categorization system that adds intelligent, multi-dimensional organization on top of the existing category structure.
+
+### New Files Created
+
+- **`themes.json`** - Theme definitions with seed themes and suggested tags
+- **`src/themes.ts`** - Theme management utilities and TypeScript interfaces
+- **`src/tags.ts`** - Tag normalization, validation, and management functions
+- **`src/analyze-themes.ts`** - Automated theme discovery script using tag clustering
+- **`docs/THEME-DISCOVERY.md`** - Comprehensive theme discovery algorithm documentation
+- **`docs/THEME-MIGRATION.md`** - Step-by-step migration guide for adding themes to tools
+
+### Modified Files
+
+- **`package.json`** - Added `analyze:themes` script
+
+### Organizational Hierarchy
+
+```
+Themes (1-3 per tool, one primary)
+  ↓ Conceptual groupings spanning multiple categories
+  ↓ Examples: "AI-Powered Development", "Developer Productivity"
+  ↓
+Categories (1 per tool, determines directory structure)
+  ↓ Fixed organizational buckets for file system
+  ↓ Examples: "ai-coding-assistants", "testing-tools"
+  ↓
+Tags (unlimited, granular descriptors)
+  ↓ Multi-dimensional metadata for filtering
+  ↓ Examples: "cli", "python", "vscode", "security"
+```
+
+### Key Features
+
+1. **Hybrid Theme Discovery** - Manual seed themes + automated discovery + approval workflow
+2. **Soft Vocabulary Tags** - Suggested tags with normalization and close-match suggestions
+3. **Multi-Theme Assignment** - Tools can have 1-3 themes (1 primary + up to 2 secondary)
+4. **Theme Lifecycle** - Manual review with 30-day grace period for themes dropping below 3 tools
+5. **Tag Management** - Levenshtein distance-based validation, normalization, and statistics
+
+### Usage
+
+```bash
+# Analyze existing tools and discover themes
+bun run analyze:themes
+
+# Generate detailed report
+bun run analyze:themes --output themes-report.json
+
+# Type check all code
+bun run typecheck
+```
+
+### Theme Structure
+
+```json
+{
+  "id": "ai-powered-development",
+  "name": "AI-Powered Development",
+  "description": "Tools leveraging AI for coding workflows",
+  "keywords": ["ai", "ml", "code-generation"],
+  "categories": ["ai-coding-assistants", "code-analysis-quality"],
+  "status": "active",
+  "metadata": {
+    "auto_discovered": false,
+    "tool_count": 0,
+    "created_date": "2025-11-24",
+    "approved_by": "manual"
+  }
+}
+```
+
+### Tool Frontmatter Example
+
+```yaml
+---
+tool_name: 'GitHub Copilot'
+category: ai-coding-assistants
+themes:
+  primary: ai-powered-development
+  secondary:
+    - developer-productivity
+tags:
+  - ai
+  - code-completion
+  - vscode
+repository: https://github.com/features/copilot
+---
+```
+
+### Testing Results
+
+```bash
+$ bun run typecheck
+✅ PASS - No TypeScript errors
+
+$ bun run analyze:themes
+✅ PASS - Script executes successfully
+✅ Displays existing themes correctly
+✅ Provides theme discovery and recommendations
+```
+
+### Documentation
+
+- **Theme Discovery**: `docs/THEME-DISCOVERY.md`
+- **Migration Guide**: `docs/THEME-MIGRATION.md`
+- **API Reference**: JSDoc comments in `src/themes.ts` and `src/tags.ts`
 
 ## Summary
 
@@ -187,3 +299,7 @@ See `docs/DYNAMIC-CATEGORIES.md` for:
 ✅ Automated synchronization
 ✅ Easy to maintain and extend
 ✅ Backward compatible with existing tools
+✅ **Theme-based multi-dimensional organization**
+✅ **Automated theme discovery with tag clustering**
+✅ **Tag normalization and validation**
+✅ **Comprehensive migration documentation**

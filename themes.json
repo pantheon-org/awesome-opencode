@@ -1,0 +1,107 @@
+{
+  "themes": [
+    {
+      "id": "ai-powered-development",
+      "name": "AI-Powered Development",
+      "description": "Tools that leverage artificial intelligence and machine learning to enhance coding workflows, from code generation to automated refactoring.",
+      "keywords": [
+        "artificial intelligence",
+        "machine learning",
+        "code generation",
+        "autocomplete",
+        "copilot"
+      ],
+      "categories": [
+        "ai-coding-assistants",
+        "code-analysis-quality"
+      ],
+      "status": "active",
+      "metadata": {
+        "auto_discovered": false,
+        "tool_count": 0,
+        "created_date": "2025-11-24",
+        "approved_by": "manual"
+      }
+    },
+    {
+      "id": "developer-productivity",
+      "name": "Developer Productivity",
+      "description": "Tools focused on streamlining development workflows, reducing manual tasks, and accelerating software delivery.",
+      "keywords": [
+        "automation",
+        "workflow",
+        "efficiency",
+        "productivity",
+        "devops"
+      ],
+      "categories": [
+        "development-automation",
+        "ide-extensions",
+        "testing-tools"
+      ],
+      "status": "active",
+      "metadata": {
+        "auto_discovered": false,
+        "tool_count": 0,
+        "created_date": "2025-11-24",
+        "approved_by": "manual"
+      }
+    },
+    {
+      "id": "code-quality-security",
+      "name": "Code Quality & Security",
+      "description": "Tools that analyze code for quality issues, security vulnerabilities, and enforce best practices.",
+      "keywords": [
+        "security",
+        "vulnerabilities",
+        "static-analysis",
+        "linting",
+        "code-review"
+      ],
+      "categories": [
+        "code-analysis-quality",
+        "testing-tools"
+      ],
+      "status": "active",
+      "metadata": {
+        "auto_discovered": false,
+        "tool_count": 0,
+        "created_date": "2025-11-24",
+        "approved_by": "manual"
+      }
+    }
+  ],
+  "suggested_tags": [
+    "ai",
+    "cli",
+    "vscode",
+    "testing",
+    "python",
+    "typescript",
+    "javascript",
+    "code-generation",
+    "security",
+    "performance",
+    "automation",
+    "linting",
+    "debugging",
+    "refactoring",
+    "documentation",
+    "git",
+    "ci-cd",
+    "docker",
+    "kubernetes",
+    "cloud",
+    "api",
+    "web",
+    "mobile",
+    "database",
+    "monitoring",
+    "logging"
+  ],
+  "seed_themes": [
+    "ai-powered-development",
+    "developer-productivity",
+    "code-quality-security"
+  ]
+}
