@@ -11,7 +11,7 @@ Tools that leverage artificial intelligence and machine learning to enhance codi
 
 ## Tools
 
-*No tools have been added to this theme yet.*
+_No tools have been added to this theme yet._
 
 ## Keywords
 
@@ -23,4 +23,4 @@ Tools that leverage artificial intelligence and machine learning to enhance codi
 
 ---
 
-*This theme page is automatically generated. [Edit theme metadata](../../themes.json)*
+_This theme page is automatically generated. [Edit theme metadata](../../themes.json)_
