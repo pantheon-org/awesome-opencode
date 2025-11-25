@@ -26,27 +26,7 @@ jobs:
 
       - name: Load categories, themes, and prompt
         id: load-data
-        run: |
-          CATEGORIES=$(cat categories.json | jq -c '.categories')
-          echo "categories=$CATEGORIES" >> $GITHUB_OUTPUT
-
-          # Format categories for prompt
-          CATEGORIES_PROMPT=$(cat categories.json | jq -r '.categories[] | "   - \(.slug): \(.description)"')
-          echo "categories_prompt<<EOF" >> $GITHUB_OUTPUT
-          echo "$CATEGORIES_PROMPT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-          # Format themes for prompt
-          THEMES_PROMPT=$(cat themes.json | jq -r '.themes[] | select(.status == "active") | "   - \(.id): \(.description)\n     Keywords: \(.keywords | join(", "))"')
-          echo "themes_prompt<<EOF" >> $GITHUB_OUTPUT
-          echo "$THEMES_PROMPT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-          # Load prompt template
-          PROMPT_TEMPLATE=$(cat .github/prompts/categorize-tool.md)
-          echo "prompt_template<<EOF" >> $GITHUB_OUTPUT
-          echo "$PROMPT_TEMPLATE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+        run: .github/scripts/load-data.sh
 
       - name: Post OpenCode categorization request
         uses: actions/github-script@v7
@@ -56,39 +36,11 @@ jobs:
           PROMPT_TEMPLATE: ${{ steps.load-data.outputs.prompt_template }}
         with:
           script: |
-            const body = context.payload.issue.body;
-            const urlMatch = body.match(/https:\/\/github\.com\/[^\s\)]+/);
-
-            if (!urlMatch) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: `❌ **Error**: No GitHub repository URL found. Cannot proceed with categorization.`
-              });
-              return;
-            }
-
-            const repoUrl = urlMatch[0];
-            const repoPath = repoUrl.replace('https://github.com/', '');
-            const repoName = repoPath.split('/').pop();
-            const categoriesPrompt = process.env.CATEGORIES_PROMPT;
-            const themesPrompt = process.env.THEMES_PROMPT;
-            const currentDate = new Date().toISOString().split('T')[0];
-
-            // Load and populate the prompt template
-            const promptTemplate = process.env.PROMPT_TEMPLATE;
-            const commentBody = promptTemplate
-              .replace(/\{\{REPO_URL\}\}/g, repoUrl)
-              .replace(/\{\{CATEGORIES_PROMPT\}\}/g, categoriesPrompt)
-              .replace(/\{\{THEMES_PROMPT\}\}/g, themesPrompt)
-              .replace(/\{\{ISSUE_NUMBER\}\}/g, context.issue.number)
-              .replace(/\{\{REPO_NAME\}\}/g, repoName)
-              .replace(/\{\{CURRENT_DATE\}\}/g, currentDate);
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: commentBody
+            const postCategorizationComment = require('./.github/scripts/post-categorization-comment.cjs');
+            await postCategorizationComment({
+              github,
+              context,
+              categoriesPrompt: process.env.CATEGORIES_PROMPT,
+              themesPrompt: process.env.THEMES_PROMPT,
+              promptTemplate: process.env.PROMPT_TEMPLATE
             });
