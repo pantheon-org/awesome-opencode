@@ -239,3 +239,89 @@ export const getThemesAsJson = (): string => {
   const config = loadThemes();
   return JSON.stringify(config, null, 2);
 };
+
+/**
+ * Add a new theme or return existing if it already exists
+ * Used during tool submission to handle auto-discovered themes
+ * @param themeData - Partial theme data from OpenCode
+ * @returns The theme ID
+ */
+export const addOrGetTheme = (themeData: {
+  id: string;
+  name: string;
+  description: string;
+  keywords?: string[];
+  categories?: string[];
+}): string => {
+  const config = loadThemes();
+  const existingTheme = config.themes.find((t) => t.id === themeData.id);
+
+  if (existingTheme) {
+    return existingTheme.id;
+  }
+
+  // Create new theme with pending-review status
+  const newTheme: Theme = {
+    id: themeData.id,
+    name: themeData.name,
+    description: themeData.description,
+    keywords: themeData.keywords || [],
+    categories: themeData.categories || [],
+    status: 'under_review',
+    metadata: {
+      auto_discovered: true,
+      tool_count: 1,
+      created_date: new Date().toISOString().split('T')[0],
+      approved_by: null,
+    },
+  };
+
+  config.themes.push(newTheme);
+  saveThemes(config);
+
+  return newTheme.id;
+};
+
+/**
+ * Activate pending themes (change status from under_review to active)
+ * Called during PR merge workflow
+ * @param themeIds - Array of theme IDs to activate
+ */
+export const activateThemes = (themeIds: string[]): void => {
+  const config = loadThemes();
+  let modified = false;
+
+  for (const themeId of themeIds) {
+    const theme = config.themes.find((t) => t.id === themeId);
+    if (theme && theme.status === 'under_review') {
+      theme.status = 'active';
+      theme.metadata.approved_by = 'manual';
+      modified = true;
+    }
+  }
+
+  if (modified) {
+    saveThemes(config);
+  }
+};
+
+/**
+ * Increment tool count for themes
+ * @param themeIds - Array of theme IDs to increment
+ */
+export const incrementThemeToolCounts = (themeIds: string[]): void => {
+  const config = loadThemes();
+  let modified = false;
+
+  for (const themeId of themeIds) {
+    const theme = config.themes.find((t) => t.id === themeId);
+    if (theme) {
+      theme.metadata.tool_count += 1;
+      modified = true;
+    }
+  }
+
+  if (modified) {
+    saveThemes(config);
+  }
+};

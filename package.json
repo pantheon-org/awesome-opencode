@@ -20,6 +20,7 @@
     "sync:readme": "bun run src/sync-readme.ts",
     "ensure:categories": "bun run src/ensure-categories.ts",
     "analyze:themes": "bun run src/analyze-themes.ts",
+    "generate:themes": "bun run src/generate-theme-pages.ts",
     "clean": "rm -rf dist/ .bun-cache/ coverage/",
     "prepare": "lefthook install"
   },
