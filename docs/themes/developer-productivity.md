@@ -11,7 +11,7 @@ Tools focused on streamlining development workflows, reducing manual tasks, and 
 
 ## Tools
 
-*No tools have been added to this theme yet.*
+_No tools have been added to this theme yet._
 
 ## Keywords
 
@@ -23,4 +23,4 @@ Tools focused on streamlining development workflows, reducing manual tasks, and 
 
 ---
 
-*This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)*
+_This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)_

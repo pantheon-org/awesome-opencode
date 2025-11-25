@@ -11,7 +11,7 @@ Tools that analyze code for quality issues, security vulnerabilities, and enforc
 
 ## Tools
 
-*No tools have been added to this theme yet.*
+_No tools have been added to this theme yet._
 
 ## Keywords
 
@@ -24,4 +24,4 @@ Tools that analyze code for quality issues, security vulnerabilities, and enforc
 
 ---
 
-*This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)*
+_This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)_

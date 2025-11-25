@@ -10,6 +10,7 @@
 
 import { formatCategoriesForPrompt } from '../category';
 import { formatThemesForPrompt } from '../theme';
+import { validateCategoriesFile, validateThemesFile } from '../validation';
 import { readFileSync, appendFileSync } from 'fs';
 import { join } from 'path';
 
@@ -44,8 +45,26 @@ const action = process.argv[2];
 try {
   switch (action) {
     case 'load-data': {
+      // Validate categories data before loading
+      const categoriesPath = join(process.cwd(), 'data', 'categories.json');
+      const categoriesValidation = validateCategoriesFile(categoriesPath);
+      if (!categoriesValidation.valid) {
+        console.error('❌ Categories validation failed:');
+        categoriesValidation.errors.forEach((error) => console.error(`  - ${error}`));
+        process.exit(1);
+      }
+
+      // Validate themes data before loading
+      const themesPath = join(process.cwd(), 'data', 'themes.json');
+      const themesValidation = validateThemesFile(themesPath);
+      if (!themesValidation.valid) {
+        console.error('❌ Themes validation failed:');
+        themesValidation.errors.forEach((error) => console.error(`  - ${error}`));
+        process.exit(1);
+      }
+
       // Load categories JSON for the workflow
-      const categoriesJson = readFileSync(join(process.cwd(), 'data', 'categories.json'), 'utf-8');
+      const categoriesJson = readFileSync(categoriesPath, 'utf-8');
       const categories = JSON.parse(categoriesJson).categories;
       writeSingleLineOutput('categories', JSON.stringify(categories));
 

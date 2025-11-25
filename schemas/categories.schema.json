@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opencode.ai/schemas/categories.json",
+  "title": "Categories Schema",
+  "description": "Schema for categories.json data file",
+  "type": "object",
+  "properties": {
+    "categories": {
+      "type": "array",
+      "description": "List of all categories",
+      "items": {
+        "type": "object",
+        "required": ["slug", "title", "description"],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly category identifier",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable category name",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "description": "Category description",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": ["categories"],
+  "additionalProperties": false
+}
