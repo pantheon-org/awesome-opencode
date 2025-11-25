@@ -21,6 +21,9 @@ pre-commit:
     test:
       run: 'bun test "{staged_files}"'
       glob: '**/*.{spec.ts,spec.tsx,spec.js,spec.jsx,test.ts,test.tsx,test.js,test.jsx}'
+    validate-data:
+      glob: 'data/*.json'
+      run: 'bun run validate:data'
 
 pre-push:
   parallel: false
