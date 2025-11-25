@@ -1,8 +1,8 @@
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { ToolInfo } from './types';
+import { ToolInfo } from '../tool';
 import { parseFrontmatter } from './parse-frontmatter';
-import { extractDescription } from './extract-desription';
+import { extractDescription } from './extract-description';
 
 /**
  * Get all tools from docs/tools/ directory

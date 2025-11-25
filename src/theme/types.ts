@@ -17,19 +17,6 @@ export interface Theme {
   };
 }
 
-export interface ToolThemes {
-  primary: string;
-  secondary: string[];
-}
-
-export interface ToolMetadata {
-  tool_name: string;
-  category: string;
-  themes: ToolThemes;
-  tags: string[];
-  repository: string;
-}
-
 export interface ThemeDiscoveryConfig {
   minToolsPerTheme: number;
   maxThemesPerTool: number;
@@ -42,20 +29,6 @@ export interface ThemesConfig {
   seed_themes: string[];
 }
 
-export interface ToolFrontmatter {
-  tool_name: string;
-  repository: string;
-  category: string;
-  themes: string[];
-  tags: string[];
-  submitted_date?: string;
-}
-
-export interface ToolInfo extends ToolFrontmatter {
-  filename: string;
-  description: string;
-}
-
 export interface ThemeCandidate {
   id: string;
   name: string;
@@ -64,13 +37,4 @@ export interface ThemeCandidate {
   categories: string[];
   tools: string[];
   confidence: number;
-}
-
-export interface AnalysisReport {
-  total_tools: number;
-  total_categories: number;
-  discovered_themes: ThemeCandidate[];
-  low_confidence_themes: ThemeCandidate[];
-  tag_statistics: { tag: string; count: number }[];
-  recommendations: string[];
 }

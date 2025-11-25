@@ -1,4 +1,4 @@
-import { getActiveThemes } from './get-active-themes';
+import { getActiveThemes } from './get-themes';
 
 /**
  * Format themes for OpenCode prompt
