@@ -35,3 +35,18 @@ logs/
 
 # Bun cache
 .bun-cache/
+
+# Github
+!.github/data/submissions-registry.json
+!.github/ISSUE_TEMPLATE/submit-tool.yml
+!.github/prompts/categorize-tool.md
+!.github/prompts/triage-relevance.md
+!.github/scripts/load-data.sh
+!.github/scripts/load-prompts.sh
+!.github/scripts/post-categorization-comment.cjs
+!.github/scripts/post-triage-comment.cjs
+!.github/scripts/post-validation-comment.cjs
+!.github/workflows/categorize-tool.yml
+!.github/workflows/opencode.yml
+!.github/workflows/triage-submission.yml
+!.github/workflows/validate-and-merge.yml
