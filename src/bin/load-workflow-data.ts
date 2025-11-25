@@ -45,7 +45,7 @@ try {
   switch (action) {
     case 'load-data': {
       // Load categories JSON for the workflow
-      const categoriesJson = readFileSync(join(process.cwd(), 'categories.json'), 'utf-8');
+      const categoriesJson = readFileSync(join(process.cwd(), 'data', 'categories.json'), 'utf-8');
       const categories = JSON.parse(categoriesJson).categories;
       writeSingleLineOutput('categories', JSON.stringify(categories));
 

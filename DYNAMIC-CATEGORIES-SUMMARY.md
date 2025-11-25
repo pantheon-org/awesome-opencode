@@ -8,7 +8,7 @@ Successfully transformed the project from static, hardcoded categories to a dyna
 
 ### 1. New Files Created
 
-- **`categories.json`** - Single source of truth for all category definitions
+- **`data/categories.json`** - Single source of truth for all category definitions
 - **`src/categories.ts`** - Utility functions for category management
 - **`src/sync-readme.ts`** - Script to sync README.md with categories.json
 - **`src/ensure-categories.ts`** - Script to create category directories
@@ -119,7 +119,7 @@ const prompt = formatCategoriesForPrompt();
 
 **After:**
 
-- Single `categories.json` file
+- Single `data/categories.json` file
 - Workflows load dynamically
 - Automated scripts for sync
 - Always consistent
@@ -189,7 +189,7 @@ Successfully implemented dynamic theme-based categorization system that adds int
 
 ### New Files Created
 
-- **`themes.json`** - Theme definitions with seed themes and suggested tags
+- **`data/themes.json`** - Theme definitions with seed themes and suggested tags
 - **`src/themes.ts`** - Theme management utilities and TypeScript interfaces
 - **`src/tags.ts`** - Tag normalization, validation, and management functions
 - **`src/analyze-themes.ts`** - Automated theme discovery script using tag clustering
@@ -295,7 +295,7 @@ $ bun run analyze:themes
 ## Summary
 
 ✅ Categories are now fully dynamic
-✅ Single source of truth (`categories.json`)
+✅ Single source of truth (`data/categories.json`)
 ✅ Automated synchronization
 ✅ Easy to maintain and extend
 ✅ Backward compatible with existing tools

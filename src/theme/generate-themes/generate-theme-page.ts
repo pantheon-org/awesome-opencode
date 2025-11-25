@@ -92,7 +92,7 @@ const generateFooter = (): string[] => {
   lines.push('---');
   lines.push('');
   lines.push(
-    '*This theme page is automatically generated. [Edit theme metadata](../../themes.json)*',
+    '*This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)*',
   );
   return lines;
 };

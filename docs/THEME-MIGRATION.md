@@ -10,7 +10,7 @@ The migration follows a phased rollout approach:
 
 ### Phase 1: Foundation (Week 1-2)
 
-- ✅ Create `themes.json` with seed themes
+- ✅ Create `data/themes.json` with seed themes
 - ✅ Implement theme management utilities
 - ✅ Create tag management system
 - ✅ Build theme discovery script
@@ -80,7 +80,7 @@ Review the generated report to understand:
    - Ensure keywords are relevant
    - Confirm category mappings
 
-4. Add approved themes to `themes.json`:
+4. Add approved themes to `data/themes.json`:
 
 ```json
 {
@@ -380,7 +380,7 @@ If issues arise during migration:
 
 ### 3. Data Preservation
 
-- All theme data stored in `themes.json`
+- All theme data stored in `data/themes.json`
 - Tool frontmatter backed up before migration
 - Git history preserves previous state
 
@@ -393,7 +393,7 @@ If issues arise during migration:
 **Solution**:
 
 1. Verify tool has `themes.primary` field
-2. Check theme ID matches theme in `themes.json`
+2. Check theme ID matches theme in `data/themes.json`
 3. Ensure theme status is "active"
 
 ### Issue: Tag Validation Warnings

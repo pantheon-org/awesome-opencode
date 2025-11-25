@@ -53,7 +53,7 @@ When a tool is submitted:
      - Clear name (e.g., "API Testing")
      - Description (what tools in this theme do)
      - 3-5 keywords
-3. **Auto-Add to themes.json**:
+3. **Auto-Add to data/themes.json**:
    - New themes added with `status: "pending-review"`
    - Includes metadata: creation date, tool count, auto-discovery flag
 
@@ -65,7 +65,7 @@ When a tool is submitted:
 
 5. **PR Creation**:
    - Tool doc at `docs/tools/{tool}.md`
-   - Updated `themes.json` (if new themes)
+   - Updated `data/themes.json` (if new themes)
    - Updated/created theme pages
    - Label: `automated` (and `new-themes` if applicable)
 
@@ -211,11 +211,11 @@ Updates README.md with current categories and themes.
 
 ### Categorize Tool Workflow
 
-1. Loads active themes from `themes.json`
+1. Loads active themes from `data/themes.json`
 2. Passes themes to OpenCode in prompt
 3. OpenCode responds with category + themes + tags
 4. Creates tool doc with frontmatter
-5. Adds new themes to `themes.json` if needed
+5. Adds new themes to `data/themes.json` if needed
 6. Generates/updates theme pages
 7. Creates PR
 
@@ -223,7 +223,7 @@ Updates README.md with current categories and themes.
 
 1. Checks if PR has new themes (label: `new-themes`)
 2. Validates tool documentation
-3. If new themes: activates them in `themes.json`
+3. If new themes: activates them in `data/themes.json`
 4. Updates README.md
 5. Merges PR
 6. Closes issue
@@ -302,7 +302,7 @@ Examples:
 
 Check:
 
-1. Theme status is `active` in `themes.json`
+1. Theme status is `active` in `data/themes.json`
 2. Theme page exists in `docs/themes/`
 3. Run `bun run generate:themes` to regenerate
 
@@ -319,7 +319,7 @@ bun run generate:themes
 Check:
 
 1. PR was merged successfully
-2. `themes.json` shows theme with `status: "active"`
+2. `data/themes.json` shows theme with `status: "active"`
 3. Validation workflow completed
 
 ### Tool Not Listed in Theme
@@ -334,7 +334,7 @@ Check:
 
 For issues with the theme system:
 
-1. Check `themes.json` for theme status
+1. Check `data/themes.json` for theme status
 2. Review workflow logs in Actions tab
 3. Regenerate theme pages manually
 4. Create issue with `theme-system` label

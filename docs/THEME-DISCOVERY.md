@@ -141,7 +141,7 @@ Generates a detailed JSON report with:
 
 ## Theme Configuration
 
-### themes.json Structure
+### data/themes.json Structure
 
 ```json
 {
@@ -201,7 +201,7 @@ validateTag('typscript', suggestedTags);
 
 ### Suggested Tags
 
-The `suggested_tags` list in `themes.json` provides guidance without enforcing strict vocabulary:
+The `suggested_tags` list in `data/themes.json` provides guidance without enforcing strict vocabulary:
 
 - New tags are allowed if they pass normalization
 - System suggests existing tags for close matches

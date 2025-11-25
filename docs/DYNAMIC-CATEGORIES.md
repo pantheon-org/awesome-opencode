@@ -4,7 +4,7 @@ This project now supports **dynamic category management**, making it easy to add
 
 ## Overview
 
-All categories are defined in a single source of truth: `categories.json`
+All categories are defined in a single source of truth: `data/categories.json`
 
 ### Benefits
 
@@ -15,7 +15,7 @@ All categories are defined in a single source of truth: `categories.json`
 
 ## Category Configuration
 
-### File: `categories.json`
+### File: `data/categories.json`
 
 ```json
 {
@@ -47,7 +47,7 @@ All categories are defined in a single source of truth: `categories.json`
 
 The `categorize-tool.yml` workflow:
 
-1. Loads categories from `categories.json`
+1. Loads categories from `data/categories.json`
 2. Formats them for the OpenCode prompt
 3. Passes them as options for categorization
 4. Creates tool documentation in the chosen category directory
@@ -56,7 +56,7 @@ The `categorize-tool.yml` workflow:
 
 Run `bun run sync:readme` to:
 
-- Read categories from `categories.json`
+- Read categories from `data/categories.json`
 - Update the README.md Categories section
 - Maintain alphabetical order
 
@@ -125,7 +125,7 @@ git commit -m "Add ML & AI Tools category"
 
 ### Changing a Description
 
-Edit `categories.json`, then run:
+Edit `data/categories.json`, then run:
 
 ```bash
 bun run sync:readme
@@ -134,7 +134,7 @@ git commit -am "Update category descriptions"
 
 ### Renaming a Category
 
-1. Update the `title` in `categories.json`
+1. Update the `title` in `data/categories.json`
 2. Optionally update the `slug` (requires renaming directory)
 3. Run sync scripts
 4. If slug changed, manually rename the directory:
@@ -146,7 +146,7 @@ bun run sync:readme
 
 ### Removing a Category
 
-1. Remove from `categories.json`
+1. Remove from `data/categories.json`
 2. Run `bun run sync:readme`
 3. Optionally delete the directory:
 
@@ -191,7 +191,7 @@ All workflows automatically load categories:
 
 1. **categorize-tool.yml** - Loads categories for AI categorization
 2. **validate-and-merge.yml** - Validates category exists
-3. Future workflows will also use `categories.json`
+3. Future workflows will also use `data/categories.json`
 
 ### How Workflows Load Categories
 
@@ -260,7 +260,7 @@ touch docs/category-slug/.gitkeep
 
 ### Workflow not finding categories
 
-1. Ensure `categories.json` is in repository root
+1. Ensure `data/categories.json` is in repository root
 2. Check JSON syntax is valid
 3. Verify workflows have checkout step before loading categories
 
@@ -315,7 +315,7 @@ git commit -am "Reorganize category order"
 
 If migrating from hardcoded categories:
 
-1. All category definitions are now in `categories.json`
+1. All category definitions are now in `data/categories.json`
 2. Workflows load categories dynamically
 3. No need to edit workflow YAML files
 4. Use utility scripts to manage README and directories
@@ -340,7 +340,7 @@ Potential additions:
 
 For issues or questions:
 
-- Check `categories.json` syntax with `cat categories.json | jq '.'`
+- Check `data/categories.json` syntax with `cat categories.json | jq '.'`
 - Run utility scripts to diagnose issues
 - Review workflow logs in GitHub Actions
 - Open an issue with the `category-management` label

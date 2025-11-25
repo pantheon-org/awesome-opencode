@@ -93,7 +93,7 @@ awesome-opencode/
 
 ## Categories
 
-Categories are now **dynamically managed** through `categories.json`. This allows you to:
+Categories are now **dynamically managed** through `data/categories.json`. This allows you to:
 
 - Add new categories without modifying workflow files
 - Maintain consistency across README and documentation
@@ -101,7 +101,7 @@ Categories are now **dynamically managed** through `categories.json`. This allow
 
 ### Current Categories
 
-Categories are loaded from `categories.json`:
+Categories are loaded from `data/categories.json`:
 
 1. **AI Coding Assistants** - AI-powered code completion and generation
 2. **Code Analysis & Quality** - Code quality and issue detection
@@ -114,7 +114,7 @@ Categories are loaded from `categories.json`:
 
 **To add a new category:**
 
-1. Edit `categories.json` and add your new category:
+1. Edit `data/categories.json` and add your new category:
 
 ```json
 {
@@ -230,12 +230,12 @@ Edit prompt in `triage-submission.yml` to adjust relevance criteria
 
 ### Category Configuration
 
-**Now Dynamic!** Categories are managed through `categories.json`:
+**Now Dynamic!** Categories are managed through `data/categories.json`:
 
-1. Add category to `categories.json`
+1. Add category to `data/categories.json`
 2. Run `bun run ensure:categories` to create directory
 3. Run `bun run sync:readme` to update README.md
-4. Workflows automatically load categories from `categories.json`
+4. Workflows automatically load categories from `data/categories.json`
 
 ### Documentation Format
 

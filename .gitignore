@@ -37,7 +37,6 @@ logs/
 .bun-cache/
 
 # Github
-!.github/data/submissions-registry.json
 !.github/ISSUE_TEMPLATE/submit-tool.yml
 !.github/prompts/categorize-tool.md
 !.github/prompts/triage-relevance.md

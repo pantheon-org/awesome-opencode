@@ -30,7 +30,7 @@ module.exports = async ({ github, context }) => {
   const toolFiles = files.data.filter(
     (f) => f.filename.endsWith('.md') && f.filename.startsWith('docs/tools/'),
   );
-  const themesJsonModified = files.data.some((f) => f.filename === 'themes.json');
+  const themesJsonModified = files.data.some((f) => f.filename === 'data/themes.json');
 
   if (toolFiles.length === 0) {
     await github.rest.issues.createComment({
@@ -56,11 +56,11 @@ Your task is to:
    - Verify it has a proper heading and description
    - Ensure the markdown is well-formatted
 
-2. ${hasNewThemes ? 'If this PR includes new themes (check if themes.json was modified):' : 'Check if themes.json was modified:'}
-   ${themesJsonModified ? '- Read themes.json and identify themes with status: "pending-review"' : '- No theme changes detected'}
+ 2. ${hasNewThemes ? 'If this PR includes new themes (check if data/themes.json was modified):' : 'Check if data/themes.json was modified:'}
+   ${themesJsonModified ? '- Read data/themes.json and identify themes with status: "pending-review"' : '- No theme changes detected'}
    ${hasNewThemes ? '- Change their status from "pending-review" to "active"' : ''}
    ${hasNewThemes ? '- Set approved_by: "manual"' : ''}
-   ${hasNewThemes ? '- Commit the updated themes.json' : ''}
+   ${hasNewThemes ? '- Commit the updated data/themes.json' : ''}
 
 3. Read the current README.md
 
