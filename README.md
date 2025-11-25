@@ -1,5 +1,10 @@
 # Awesome OpenCode
 
+![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pantheon-org/awesome-opencode/main/.github/badges/coverage.json)
+![Security Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pantheon-org/awesome-opencode/main/.github/badges/security-coverage.json)
+[![Security Tests](https://github.com/pantheon-org/awesome-opencode/actions/workflows/security-tests.yml/badge.svg)](https://github.com/pantheon-org/awesome-opencode/actions/workflows/security-tests.yml)
+[![Security Lint](https://github.com/pantheon-org/awesome-opencode/actions/workflows/security-lint.yml/badge.svg)](https://github.com/pantheon-org/awesome-opencode/actions/workflows/security-lint.yml)
+
 A curated list of tools related to [OpenCode](https://opencode.ai/) and similar AI-powered coding assistants.
 
 ## Contributing
@@ -55,21 +60,21 @@ Discover tools organized by their primary purpose and philosophy:
 
 ### 🤖 [AI-Powered Development](docs/themes/ai-powered-development.md)
 
-Tools leveraging AI and machine learning to enhance coding workflows, from intelligent code completion to automated refactoring.
+Tools that leverage artificial intelligence and machine learning to enhance coding workflows, from code generation to automated refactoring.
 
-**Related categories:** AI Coding Assistants, Code Analysis & Quality
+**Related categories:** Ai Coding Assistants, Code Analysis Quality
 
 ### ⚡ [Developer Productivity](docs/themes/developer-productivity.md)
 
 Tools focused on streamlining development workflows, reducing manual tasks, and accelerating software delivery.
 
-**Related categories:** Development Automation, IDE Extensions, Testing Tools
+**Related categories:** Development Automation, Ide Extensions, Testing Tools
 
 ### 🔒 [Code Quality & Security](docs/themes/code-quality-security.md)
 
 Tools that analyze code for quality issues, security vulnerabilities, and enforce best practices.
 
-**Related categories:** Code Analysis & Quality, Testing Tools
+**Related categories:** Code Analysis Quality, Testing Tools
 
 ## Categories
 
