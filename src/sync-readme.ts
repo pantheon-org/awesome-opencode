@@ -7,7 +7,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { loadCategories } from './categories';
+import { loadCategories } from './category';
 
 const README_PATH = join(process.cwd(), 'README.md');
 

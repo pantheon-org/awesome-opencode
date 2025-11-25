@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 /**
  * Ensure all category directories exist
  * This script creates any missing category directories based on categories.json
@@ -6,14 +5,14 @@
 
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { loadCategories } from './categories';
+import { loadCategories } from './load-categories';
 
 const DOCS_DIR = join(process.cwd(), 'docs');
 
 /**
  * Ensure all category directories exist
  */
-const ensureCategoryDirectories = (): void => {
+export const ensureCategoryDirectories = (): void => {
   const categories = loadCategories();
   let created = 0;
   let existed = 0;
@@ -40,11 +39,3 @@ const ensureCategoryDirectories = (): void => {
   console.log(`   Already existed: ${existed}`);
   console.log(`   Total categories: ${categories.length}`);
 };
-
-// Run the check
-try {
-  ensureCategoryDirectories();
-} catch (error) {
-  console.error('❌ Error ensuring category directories:', error);
-  process.exit(1);
-}
