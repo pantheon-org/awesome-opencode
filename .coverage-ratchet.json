@@ -1,15 +1,15 @@
 {
   "overall": {
-    "functions": 99.51,
-    "lines": 96.74
+    "functions": 99.59,
+    "lines": 97.31
   },
   "security": {
-    "functions": 99.37857142857142,
-    "lines": 93.64142857142856
+    "functions": 99.45625,
+    "lines": 94.43624999999999
   },
   "validation": {
     "functions": 100,
     "lines": 100
   },
-  "timestamp": "2025-11-26T00:22:12.444Z"
+  "timestamp": "2025-11-26T10:38:07.626Z"
 }

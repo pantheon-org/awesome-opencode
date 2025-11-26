@@ -2,131 +2,177 @@
  * Type definitions for security tracking, rate limiting, and alerting
  */
 
-/**
- * Workflow type where injection occurred
- */
-export type WorkflowType = 'triage' | 'categorize' | 'validate';
+import { z } from 'zod';
 
 /**
- * Injection pattern type detected
+ * Zod schema for workflow types
  */
-export type InjectionPattern =
-  | 'role-switching'
-  | 'instruction-override'
-  | 'delimiter-injection'
-  | 'context-confusion'
-  | 'encoded-payload'
-  | 'url-injection'
-  | 'unknown';
+export const WorkflowTypeSchema = z.enum(['triage', 'categorize', 'validate']);
 
 /**
- * Individual injection attempt record
+ * Inferred TypeScript type from the Zod schema
  */
-export interface InjectionAttempt {
-  /** ISO 8601 timestamp */
-  timestamp: string;
-  /** GitHub username */
-  user: string;
-  /** Type of workflow where injection was detected */
-  workflow: WorkflowType;
-  /** Primary pattern detected */
-  pattern: InjectionPattern;
-  /** SHA-256 hash of content (first 8 chars for privacy) */
-  contentHash: string;
-  /** Whether the attempt was blocked or just logged */
-  blocked: boolean;
-  /** Optional: Issue or PR number where injection occurred */
-  issueNumber?: number;
-  /** Optional: Repository where injection occurred (if cross-repo tracking) */
-  repository?: string;
-}
+export type WorkflowType = z.infer<typeof WorkflowTypeSchema>;
 
 /**
- * Rate limit configuration per entity (user or repo)
+ * Zod schema for injection pattern types
  */
-export interface RateLimitConfig {
-  /** Maximum number of attempts allowed */
-  maxAttempts: number;
-  /** Time window in minutes */
-  windowMinutes: number;
-}
+export const InjectionPatternSchema = z.enum([
+  'role-switching',
+  'instruction-override',
+  'delimiter-injection',
+  'context-confusion',
+  'encoded-payload',
+  'url-injection',
+  'unknown',
+]);
 
 /**
- * Rate limit state for a single user
+ * Inferred TypeScript type from the Zod schema
  */
-export interface RateLimitEntry {
-  /** Number of attempts in current window */
-  attempts: number;
-  /** Timestamp of first attempt in current window (milliseconds) */
-  firstAttempt: number;
-  /** Timestamp of last attempt (milliseconds) */
-  lastAttempt: number;
-}
+export type InjectionPattern = z.infer<typeof InjectionPatternSchema>;
 
 /**
- * Rate limit state storage (in-memory or file-based)
+ * Zod schema for individual injection attempt record
  */
-export interface RateLimitState {
-  [userId: string]: RateLimitEntry;
-}
+export const InjectionAttemptSchema = z.object({
+  timestamp: z.string().describe('ISO 8601 timestamp'),
+  user: z.string().describe('GitHub username'),
+  workflow: WorkflowTypeSchema.describe('Type of workflow where injection was detected'),
+  pattern: InjectionPatternSchema.describe('Primary pattern detected'),
+  contentHash: z.string().describe('SHA-256 hash of content (first 8 chars for privacy)'),
+  blocked: z.boolean().describe('Whether the attempt was blocked or just logged'),
+  issueNumber: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('Issue or PR number where injection occurred'),
+  repository: z
+    .string()
+    .optional()
+    .describe('Repository where injection occurred (if cross-repo tracking)'),
+});
 
 /**
- * Result of rate limit check
+ * Inferred TypeScript type from the Zod schema
  */
-export interface RateLimitResult {
-  /** Whether the request is allowed */
-  allowed: boolean;
-  /** Number of remaining attempts in current window */
-  remaining: number;
-  /** Timestamp when window resets (ISO 8601) */
-  resetAt: string;
-  /** Whether this user has been blocked */
-  blocked: boolean;
-}
+export type InjectionAttempt = z.infer<typeof InjectionAttemptSchema>;
 
 /**
- * Alerting configuration
+ * Zod schema for rate limit configuration per entity (user or repo)
  */
-export interface AlertConfig {
-  /** Whether alerting is enabled */
-  enabled: boolean;
-  /** Whether to create a GitHub issue for alerts */
-  createIssue: boolean;
-  /** Whether to comment on the source issue/PR */
-  commentOnSource: boolean;
-  /** Optional webhook URL for external alerts (Slack, Discord, etc) */
-  webhookUrl: string | null;
-}
+export const RateLimitConfigSchema = z.object({
+  maxAttempts: z.number().int().positive().describe('Maximum number of attempts allowed'),
+  windowMinutes: z.number().int().positive().describe('Time window in minutes'),
+});
 
 /**
- * Logging configuration
+ * Inferred TypeScript type from the Zod schema
  */
-export interface LogConfig {
-  /** Whether logging is enabled */
-  enabled: boolean;
-  /** Number of days to retain logs */
-  retentionDays: number;
-}
+export type RateLimitConfig = z.infer<typeof RateLimitConfigSchema>;
 
 /**
- * Complete security configuration
+ * Zod schema for rate limit state for a single user
  */
-export interface SecurityConfig {
-  /** Rate limiting configuration */
-  rateLimits: {
-    /** Per-user rate limits */
-    perUser: RateLimitConfig;
-    /** Per-repository rate limits */
-    perRepo: RateLimitConfig;
-  };
-  /** Alerting configuration */
-  alerting: AlertConfig;
-  /** Logging configuration */
-  logging: LogConfig;
-}
+export const RateLimitEntrySchema = z.object({
+  attempts: z.number().int().nonnegative().describe('Number of attempts in current window'),
+  firstAttempt: z
+    .number()
+    .int()
+    .nonnegative()
+    .describe('Timestamp of first attempt in current window (milliseconds)'),
+  lastAttempt: z.number().int().nonnegative().describe('Timestamp of last attempt (milliseconds)'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type RateLimitEntry = z.infer<typeof RateLimitEntrySchema>;
+
+/**
+ * Zod schema for rate limit state storage (in-memory or file-based)
+ */
+export const RateLimitStateSchema = z.record(z.string(), RateLimitEntrySchema);
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type RateLimitState = z.infer<typeof RateLimitStateSchema>;
+
+/**
+ * Zod schema for result of rate limit check
+ */
+export const RateLimitResultSchema = z.object({
+  allowed: z.boolean().describe('Whether the request is allowed'),
+  remaining: z
+    .number()
+    .int()
+    .nonnegative()
+    .describe('Number of remaining attempts in current window'),
+  resetAt: z.string().describe('Timestamp when window resets (ISO 8601)'),
+  blocked: z.boolean().describe('Whether this user has been blocked'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type RateLimitResult = z.infer<typeof RateLimitResultSchema>;
+
+/**
+ * Zod schema for alerting configuration
+ */
+export const AlertConfigSchema = z.object({
+  enabled: z.boolean().describe('Whether alerting is enabled'),
+  createIssue: z.boolean().describe('Whether to create a GitHub issue for alerts'),
+  commentOnSource: z.boolean().describe('Whether to comment on the source issue/PR'),
+  webhookUrl: z
+    .string()
+    .url()
+    .nullable()
+    .describe('Optional webhook URL for external alerts (Slack, Discord, etc)'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type AlertConfig = z.infer<typeof AlertConfigSchema>;
+
+/**
+ * Zod schema for logging configuration
+ */
+export const LogConfigSchema = z.object({
+  enabled: z.boolean().describe('Whether logging is enabled'),
+  retentionDays: z.number().int().positive().describe('Number of days to retain logs'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type LogConfig = z.infer<typeof LogConfigSchema>;
+
+/**
+ * Zod schema for complete security configuration
+ */
+export const SecurityConfigSchema = z.object({
+  rateLimits: z
+    .object({
+      perUser: RateLimitConfigSchema.describe('Per-user rate limits'),
+      perRepo: RateLimitConfigSchema.describe('Per-repository rate limits'),
+    })
+    .describe('Rate limiting configuration'),
+  alerting: AlertConfigSchema.describe('Alerting configuration'),
+  logging: LogConfigSchema.describe('Logging configuration'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type SecurityConfig = z.infer<typeof SecurityConfigSchema>;
 
 /**
  * GitHub REST API interface for issues
+ * Note: These are API interfaces and kept as TypeScript interfaces for function signatures
  */
 export interface GitHubIssuesAPI {
   create: (params: {
@@ -165,6 +211,7 @@ export interface GitHubIssuesAPI {
 
 /**
  * GitHub API client interface
+ * Note: This is an API interface and kept as TypeScript interface
  */
 export interface GitHubClient {
   rest: {
@@ -173,17 +220,28 @@ export interface GitHubClient {
 }
 
 /**
- * GitHub Actions context interface
+ * Zod schema for GitHub Actions context repo info
  */
-export interface GitHubContext {
-  repo: {
-    owner: string;
-    repo: string;
-  };
-}
+const GitHubRepoSchema = z.object({
+  owner: z.string().describe('Repository owner'),
+  repo: z.string().describe('Repository name'),
+});
+
+/**
+ * Zod schema for GitHub Actions context
+ */
+export const GitHubContextSchema = z.object({
+  repo: GitHubRepoSchema.describe('Repository information'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type GitHubContext = z.infer<typeof GitHubContextSchema>;
 
 /**
  * Parameters for creating a security alert
+ * Note: GitHub API client is kept as interface type, other fields use Zod validation
  */
 export interface SecurityAlertParams {
   /** GitHub API client (from actions/github-script) */
@@ -201,32 +259,45 @@ export interface SecurityAlertParams {
 }
 
 /**
- * Security report statistics
+ * Zod schema for pattern breakdown in security report
  */
-export interface SecurityReportStats {
-  /** Total injection attempts in period */
-  totalAttempts: number;
-  /** Number of unique users */
-  uniqueUsers: number;
-  /** Number of users blocked */
-  blockedUsers: number;
-  /** Number of false positives identified */
-  falsePositives: number;
-  /** Pattern breakdown */
-  patternBreakdown: {
-    pattern: InjectionPattern;
-    count: number;
-    percentage: number;
-  }[];
-  /** User activity */
-  userActivity: {
-    user: string;
-    attempts: number;
-    status: 'active' | 'warned' | 'blocked' | 'cleared';
-  }[];
-  /** Time range of report */
-  timeRange: {
-    start: string;
-    end: string;
-  };
-}
+const PatternBreakdownSchema = z.object({
+  pattern: InjectionPatternSchema.describe('Injection pattern type'),
+  count: z.number().int().nonnegative().describe('Number of times this pattern was detected'),
+  percentage: z.number().min(0).max(100).describe('Percentage of total attempts'),
+});
+
+/**
+ * Zod schema for user activity in security report
+ */
+const UserActivitySchema = z.object({
+  user: z.string().describe('GitHub username'),
+  attempts: z.number().int().nonnegative().describe('Number of injection attempts'),
+  status: z.enum(['active', 'warned', 'blocked', 'cleared']).describe('Current status of the user'),
+});
+
+/**
+ * Zod schema for time range in security report
+ */
+const TimeRangeSchema = z.object({
+  start: z.string().describe('Start timestamp (ISO 8601)'),
+  end: z.string().describe('End timestamp (ISO 8601)'),
+});
+
+/**
+ * Zod schema for security report statistics
+ */
+export const SecurityReportStatsSchema = z.object({
+  totalAttempts: z.number().int().nonnegative().describe('Total injection attempts in period'),
+  uniqueUsers: z.number().int().nonnegative().describe('Number of unique users'),
+  blockedUsers: z.number().int().nonnegative().describe('Number of users blocked'),
+  falsePositives: z.number().int().nonnegative().describe('Number of false positives identified'),
+  patternBreakdown: z.array(PatternBreakdownSchema).describe('Pattern breakdown statistics'),
+  userActivity: z.array(UserActivitySchema).describe('User activity statistics'),
+  timeRange: TimeRangeSchema.describe('Time range of report'),
+});
+
+/**
+ * Inferred TypeScript type from the Zod schema
+ */
+export type SecurityReportStats = z.infer<typeof SecurityReportStatsSchema>;
