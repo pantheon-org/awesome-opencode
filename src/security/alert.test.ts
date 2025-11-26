@@ -13,33 +13,33 @@ import {
 import type { SecurityAlertParams } from './types';
 
 describe('Security Alerting Module', () => {
-  let createCalls: any[] = [];
-  let commentCalls: any[] = [];
-  let labelCalls: any[] = [];
-  let updateCalls: any[] = [];
-  let lockCalls: any[] = [];
+  let createCalls: Array<Record<string, unknown>> = [];
+  let commentCalls: Array<Record<string, unknown>> = [];
+  let labelCalls: Array<Record<string, unknown>> = [];
+  let updateCalls: Array<Record<string, unknown>> = [];
+  let lockCalls: Array<Record<string, unknown>> = [];
 
   // Mock GitHub client
   const mockGitHub = {
     rest: {
       issues: {
-        create: (params: any) => {
+        create: (params: Record<string, unknown>) => {
           createCalls.push(params);
           return Promise.resolve({ data: { number: 123 } });
         },
-        createComment: (params: any) => {
+        createComment: (params: Record<string, unknown>) => {
           commentCalls.push(params);
           return Promise.resolve({ data: {} });
         },
-        addLabels: (params: any) => {
+        addLabels: (params: Record<string, unknown>) => {
           labelCalls.push(params);
           return Promise.resolve({ data: {} });
         },
-        update: (params: any) => {
+        update: (params: Record<string, unknown>) => {
           updateCalls.push(params);
           return Promise.resolve({ data: {} });
         },
-        lock: (params: any) => {
+        lock: (params: Record<string, unknown>) => {
           lockCalls.push(params);
           return Promise.resolve({ data: {} });
         },

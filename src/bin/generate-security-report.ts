@@ -17,7 +17,7 @@ import type { SecurityReportStats } from '../security/types';
 /**
  * Parse command line arguments
  */
-function parseArgs(): { days: number; output: string | null } {
+const parseArgs = (): { days: number; output: string | null } => {
   const args = process.argv.slice(2);
   let days = 7; // Default to last 7 days
   let output: string | null = null;
@@ -31,12 +31,12 @@ function parseArgs(): { days: number; output: string | null } {
   }
 
   return { days, output };
-}
+};
 
 /**
  * Generate security report statistics
  */
-function generateReportStats(days: number): SecurityReportStats {
+const generateReportStats = (days: number): SecurityReportStats => {
   const endDate = new Date();
   const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
@@ -102,7 +102,7 @@ function generateReportStats(days: number): SecurityReportStats {
       end: endDate.toISOString(),
     },
   };
-}
+};
 
 /**
  * Format report header
@@ -250,7 +250,7 @@ const formatReportAsMarkdown = (stats: SecurityReportStats, days: number): strin
 /**
  * Main execution
  */
-async function main() {
+const main = async () => {
   const { days, output } = parseArgs();
 
   console.log(`Generating security report for the last ${days} days...`);
@@ -270,7 +270,7 @@ async function main() {
 
   // Exit with success
   process.exit(0);
-}
+};
 
 // Run if executed directly
 if (import.meta.main) {

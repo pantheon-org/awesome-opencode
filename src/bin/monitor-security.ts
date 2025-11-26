@@ -21,7 +21,7 @@ import type { LogEntry, LogCategory } from '../monitoring/logger';
 /**
  * Parse command line arguments
  */
-function parseArgs(): { level: LogLevel; category?: LogCategory } {
+const parseArgs = (): { level: LogLevel; category?: LogCategory } => {
   const args = process.argv.slice(2);
   let level: LogLevel = LogLevel.WARN;
   let category: LogCategory | undefined;
@@ -38,16 +38,16 @@ function parseArgs(): { level: LogLevel; category?: LogCategory } {
   }
 
   return { level, category };
-}
+};
 
 /**
  * Check if entry should be displayed based on filters
  */
-function shouldDisplay(
+const shouldDisplay = (
   entry: LogEntry,
   filterLevel: LogLevel,
   filterCategory?: LogCategory,
-): boolean {
+): boolean => {
   // Check category filter
   if (filterCategory && entry.category !== filterCategory) {
     return false;
@@ -59,12 +59,12 @@ function shouldDisplay(
   const filterLevelIndex = levels.indexOf(filterLevel);
 
   return entryLevelIndex >= filterLevelIndex;
-}
+};
 
 /**
  * Get console color for log level
  */
-function getColor(level: LogLevel): string {
+const getColor = (level: LogLevel): string => {
   switch (level) {
     case LogLevel.INFO:
       return '\x1b[36m'; // Cyan
@@ -77,12 +77,12 @@ function getColor(level: LogLevel): string {
     default:
       return '\x1b[0m'; // Reset
   }
-}
+};
 
 /**
  * Get icon for log category
  */
-function getCategoryIcon(category: LogCategory): string {
+const getCategoryIcon = (category: LogCategory): string => {
   switch (category) {
     case 'injection':
       return '🛡️';
@@ -97,12 +97,12 @@ function getCategoryIcon(category: LogCategory): string {
     default:
       return '📝';
   }
-}
+};
 
 /**
  * Format log entry for display
  */
-function formatEntry(entry: LogEntry): string {
+const formatEntry = (entry: LogEntry): string => {
   const color = getColor(entry.level);
   const icon = getCategoryIcon(entry.category);
   const reset = '\x1b[0m';
@@ -120,15 +120,15 @@ function formatEntry(entry: LogEntry): string {
   }
 
   return output;
-}
+};
 
 /**
  * Read new lines from log file
  */
-function readNewLines(
+const readNewLines = (
   filePath: string,
   lastPosition: number,
-): { lines: string[]; newPosition: number } {
+): { lines: string[]; newPosition: number } => {
   try {
     const stats = statSync(filePath);
     const fileSize = stats.size;
@@ -151,12 +151,12 @@ function readNewLines(
     console.error(`Error reading log file: ${error}`);
     return { lines: [], newPosition: lastPosition };
   }
-}
+};
 
 /**
  * Main monitoring function
  */
-async function main() {
+const main = async () => {
   const { level, category } = parseArgs();
 
   console.log('🔍 Security Log Monitor');
@@ -217,7 +217,7 @@ async function main() {
 
   // Keep process alive
   await new Promise(() => {});
-}
+};
 
 // Run if executed directly
 if (import.meta.main) {

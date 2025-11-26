@@ -39,9 +39,9 @@ const DEFAULT_CONFIG: SecurityConfig = {
  * Get path to security configuration file
  * @returns Absolute path to config/security.json
  */
-export function getConfigPath(): string {
+export const getConfigPath = (): string => {
   return join(process.cwd(), 'config', 'security.json');
-}
+};
 
 /**
  * Load security configuration from file
@@ -55,7 +55,7 @@ export function getConfigPath(): string {
  * console.log(config.rateLimits.perUser.maxAttempts); // 5
  * ```
  */
-export function loadSecurityConfig(): SecurityConfig {
+export const loadSecurityConfig = (): SecurityConfig => {
   const configPath = getConfigPath();
 
   // Use default config if file doesn't exist
@@ -78,12 +78,12 @@ export function loadSecurityConfig(): SecurityConfig {
     console.error('Failed to load security config:', error);
     return { ...DEFAULT_CONFIG };
   }
-}
+};
 
 /**
  * Check if security configuration file exists
  * @returns True if config file exists
  */
-export function hasSecurityConfig(): boolean {
+export const hasSecurityConfig = (): boolean => {
   return existsSync(getConfigPath());
-}
+};

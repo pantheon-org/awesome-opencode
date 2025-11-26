@@ -38,7 +38,7 @@ const targets: ValidationTarget[] = [
 /**
  * Main validation routine
  */
-async function main(): Promise<void> {
+const main = async (): Promise<void> => {
   console.log('Validating data files...\n');
 
   let hasErrors = false;
@@ -72,7 +72,7 @@ async function main(): Promise<void> {
     console.log('\n✅ All data files are valid!');
     process.exit(0);
   }
-}
+};
 
 // Run validation
 main().catch((error) => {

@@ -17,8 +17,15 @@ import {
 } from '../security/track-injections';
 import { getTrackedEntities, getRateLimitStatus } from '../security/rate-limit';
 
+/* eslint-disable max-lines */
 /**
- * Security metrics for a time period
+ * Security metrics collection module
+ *
+ * Aggregates and analyzes security logs to provide insights into:
+ * - Injection attempt trends over time
+ * - Pattern distribution
+ * - User behavior
+ * - Attack surface analysis
  */
 export interface SecurityMetrics {
   /** Total injection attempts */
@@ -74,9 +81,70 @@ export interface TimeRange {
 /**
  * Get path to security logs directory
  */
-function getSecurityLogsDir(): string {
+const getSecurityLogsDir = (): string => {
   return join(process.cwd(), 'data', 'security-logs');
-}
+};
+
+/**
+ * Check if log file matches pattern and is within date range
+ */
+const isLogFileInDateRange = (
+  fileName: string,
+  startStr: string | undefined,
+  endStr: string,
+): { inRange: boolean; fileDate?: string } => {
+  const match = fileName.match(/^security-(\d{4}-\d{2}-\d{2})\.log$/);
+  if (!match) {
+    return { inRange: false };
+  }
+
+  const fileDate = match[1];
+
+  if (startStr && fileDate < startStr) {
+    return { inRange: false };
+  }
+  if (fileDate > endStr) {
+    return { inRange: false };
+  }
+
+  return { inRange: true, fileDate };
+};
+
+/**
+ * Parse log lines from file content
+ */
+const parseLogLines = (content: string): LogEntry[] => {
+  const entries: LogEntry[] = [];
+  const lines = content.trim().split('\n');
+
+  for (const line of lines) {
+    if (!line.trim()) {
+      continue;
+    }
+
+    try {
+      const entry = JSON.parse(line) as LogEntry;
+      entries.push(entry);
+    } catch (parseError) {
+      console.error(`Failed to parse log line: ${line}`, parseError);
+    }
+  }
+
+  return entries;
+};
+
+/**
+ * Read and parse a single log file
+ */
+const readLogFile = (filePath: string): LogEntry[] => {
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    return parseLogLines(content);
+  } catch (readError) {
+    console.error(`Failed to read log file: ${filePath}`, readError);
+    return [];
+  }
+};
 
 /**
  * Read log entries from security log files
@@ -85,7 +153,7 @@ function getSecurityLogsDir(): string {
  * @param endDate - Optional end date
  * @returns Array of log entries
  */
-export function readLogEntries(startDate?: Date, endDate: Date = new Date()): LogEntry[] {
+export const readLogEntries = (startDate?: Date, endDate: Date = new Date()): LogEntry[] => {
   const logDir = getSecurityLogsDir();
 
   if (!existsSync(logDir)) {
@@ -99,47 +167,18 @@ export function readLogEntries(startDate?: Date, endDate: Date = new Date()): Lo
   const files = readdirSync(logDir);
 
   for (const file of files) {
-    // Match log file pattern: security-YYYY-MM-DD.log
-    const match = file.match(/^security-(\d{4}-\d{2}-\d{2})\.log$/);
-    if (!match) {
+    const { inRange } = isLogFileInDateRange(file, startStr, endStr);
+    if (!inRange) {
       continue;
     }
 
-    const fileDate = match[1];
-
-    // Filter by date range
-    if (startStr && fileDate < startStr) {
-      continue;
-    }
-    if (fileDate > endStr) {
-      continue;
-    }
-
-    // Read and parse log file
     const filePath = join(logDir, file);
-    try {
-      const content = readFileSync(filePath, 'utf-8');
-      const lines = content.trim().split('\n');
-
-      for (const line of lines) {
-        if (!line.trim()) {
-          continue;
-        }
-
-        try {
-          const entry = JSON.parse(line) as LogEntry;
-          entries.push(entry);
-        } catch (parseError) {
-          console.error(`Failed to parse log line: ${line}`, parseError);
-        }
-      }
-    } catch (readError) {
-      console.error(`Failed to read log file: ${filePath}`, readError);
-    }
+    const fileEntries = readLogFile(filePath);
+    entries.push(...fileEntries);
   }
 
   return entries;
-}
+};
 
 /**
  * Collect comprehensive security metrics for a time period
@@ -154,7 +193,7 @@ export function readLogEntries(startDate?: Date, endDate: Date = new Date()): Lo
  * console.log(`Most common pattern: ${metrics.mostCommonPattern}`);
  * ```
  */
-export function collectSecurityMetrics(daysBack = 30): SecurityMetrics {
+export const collectSecurityMetrics = (daysBack = 30): SecurityMetrics => {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - daysBack);
@@ -221,16 +260,16 @@ export function collectSecurityMetrics(daysBack = 30): SecurityMetrics {
     mostCommonPattern,
     mostTargetedWorkflow,
   };
-}
+};
 
 /**
  * Generate time-series data from injection attempts
  */
-function generateTimeSeriesData(
-  attempts: any[],
+const generateTimeSeriesData = (
+  attempts: Array<{ timestamp: string }>,
   startDate: Date,
   endDate: Date,
-): Array<{ date: string; attempts: number }> {
+): Array<{ date: string; attempts: number }> => {
   const dailyCounts = new Map<string, number>();
 
   // Initialize all dates in range with 0
@@ -254,12 +293,12 @@ function generateTimeSeriesData(
     .sort((a, b) => a.date.localeCompare(b.date));
 
   return result;
-}
+};
 
 /**
  * Count number of users currently blocked by rate limiting
  */
-function countBlockedUsers(): number {
+const countBlockedUsers = (): number => {
   const trackedUsers = getTrackedEntities('user');
   let blockedCount = 0;
 
@@ -274,7 +313,7 @@ function countBlockedUsers(): number {
   }
 
   return blockedCount;
-}
+};
 
 /**
  * Collect log statistics for a time period
@@ -289,7 +328,7 @@ function countBlockedUsers(): number {
  * console.log(`Critical events: ${stats.criticalEvents}`);
  * ```
  */
-export function collectLogStatistics(daysBack = 30): LogStatistics {
+export const collectLogStatistics = (daysBack = 30): LogStatistics => {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - daysBack);
@@ -332,7 +371,7 @@ export function collectLogStatistics(daysBack = 30): LogStatistics {
     errors,
     warnings,
   };
-}
+};
 
 /**
  * Get metrics for a specific time range
@@ -341,10 +380,10 @@ export function collectLogStatistics(daysBack = 30): LogStatistics {
  * @param endDate - End date
  * @returns Security metrics
  */
-export function getMetricsForTimeRange(startDate: Date, endDate: Date): SecurityMetrics {
+export const getMetricsForTimeRange = (startDate: Date, endDate: Date): SecurityMetrics => {
   const daysBack = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   return collectSecurityMetrics(daysBack);
-}
+};
 
 /**
  * Get top users by injection attempts
@@ -353,10 +392,10 @@ export function getMetricsForTimeRange(startDate: Date, endDate: Date): Security
  * @param daysBack - Number of days to look back
  * @returns Array of user/count pairs sorted by count (descending)
  */
-export function getTopUsersByAttempts(
+export const getTopUsersByAttempts = (
   limit = 10,
   daysBack = 30,
-): Array<{ user: string; attempts: number }> {
+): Array<{ user: string; attempts: number }> => {
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - daysBack);
@@ -373,4 +412,4 @@ export function getTopUsersByAttempts(
     .map(([user, attempts]) => ({ user, attempts }))
     .sort((a, b) => b.attempts - a.attempts)
     .slice(0, limit);
-}
+};

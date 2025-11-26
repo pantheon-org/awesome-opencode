@@ -43,12 +43,12 @@ const validate = ajv.compile(schema);
 /**
  * Format AJV error for human readability
  */
-function formatAjvError(error: ErrorObject): string {
+const formatAjvError = (error: ErrorObject): string => {
   const path = error.instancePath || '/';
   const message = error.message || 'validation failed';
   const params = error.params ? ` (${JSON.stringify(error.params)})` : '';
   return `${path}: ${message}${params}`;
-}
+};
 
 /**
  * Validate categories data against schema and security rules
@@ -65,7 +65,7 @@ function formatAjvError(error: ErrorObject): string {
  * }
  * ```
  */
-export function validateCategories(data: unknown): ValidationResult {
+export const validateCategories = (data: unknown): ValidationResult => {
   const errors: string[] = [];
 
   // Step 1: Schema validation
@@ -103,7 +103,7 @@ export function validateCategories(data: unknown): ValidationResult {
     valid: errors.length === 0,
     errors,
   };
-}
+};
 
 /**
  * Validate categories from file path
@@ -119,7 +119,7 @@ export function validateCategories(data: unknown): ValidationResult {
  * }
  * ```
  */
-export function validateCategoriesFile(filePath: string): ValidationResult {
+export const validateCategoriesFile = (filePath: string): ValidationResult => {
   try {
     const content = readFileSync(filePath, 'utf-8');
     const data = JSON.parse(content);
@@ -132,4 +132,4 @@ export function validateCategoriesFile(filePath: string): ValidationResult {
       ],
     };
   }
-}
+};

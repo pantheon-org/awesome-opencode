@@ -1,11 +1,11 @@
 {
   "overall": {
-    "functions": 99.36,
-    "lines": 96.86
+    "functions": 99.51,
+    "lines": 96.74
   },
   "security": {
-    "functions": 99.10714285714286,
-    "lines": 93.89857142857143
+    "functions": 99.37857142857142,
+    "lines": 93.64142857142856
   },
   "validation": {
     "functions": 100,

@@ -78,7 +78,7 @@ const ENCODED_PATTERN =
  * sanitizeGitHubUrl('https://evil.com/github.com/user/repo')
  * // Returns: null
  */
-export function sanitizeGitHubUrl(url: string): string | null {
+export const sanitizeGitHubUrl = (url: string): string | null => {
   if (!url || typeof url !== 'string') {
     return null;
   }
@@ -110,7 +110,7 @@ export function sanitizeGitHubUrl(url: string): string | null {
   }
 
   return cleaned;
-}
+};
 
 /**
  * Sanitize a repository name extracted from a URL
@@ -131,7 +131,7 @@ export function sanitizeGitHubUrl(url: string): string | null {
  * sanitizeRepoName('../../../etc/passwd')
  * // Returns: null (path traversal)
  */
-export function sanitizeRepoName(repoName: string): string | null {
+export const sanitizeRepoName = (repoName: string): string | null => {
   if (!repoName || typeof repoName !== 'string') {
     return null;
   }
@@ -168,7 +168,7 @@ export function sanitizeRepoName(repoName: string): string | null {
   }
 
   return cleaned;
-}
+};
 
 /**
  * Sanitize a file path to prevent path traversal and injection
@@ -190,7 +190,7 @@ export function sanitizeRepoName(repoName: string): string | null {
  * sanitizeFilePath('docs/tools/evil.md; rm -rf /', 'docs/tools/')
  * // Returns: null
  */
-export function sanitizeFilePath(filePath: string, allowedPrefix: string): string | null {
+export const sanitizeFilePath = (filePath: string, allowedPrefix: string): string | null => {
   if (!filePath || typeof filePath !== 'string') {
     return null;
   }
@@ -229,7 +229,40 @@ export function sanitizeFilePath(filePath: string, allowedPrefix: string): strin
   }
 
   return cleaned;
-}
+};
+
+/**
+ * Apply length limit to text
+ */
+const applyLengthLimit = (text: string, maxLength: number): string => {
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + '... [truncated for length]';
+  }
+  return text;
+};
+
+/**
+ * Remove injection patterns using provided pattern list
+ */
+const removePatterns = (text: string, patterns: RegExp[], replacement: string): string => {
+  let result = text;
+  for (const pattern of patterns) {
+    result = result.replace(pattern, replacement);
+  }
+  return result;
+};
+
+/**
+ * Normalize newlines in text
+ */
+const normalizeNewlines = (text: string, stripNewlines: boolean): string => {
+  if (stripNewlines) {
+    return text.replace(/\n/g, ' ').replace(/\s+/g, ' ');
+  }
+
+  // Strip excessive newlines (more than 3 consecutive)
+  return text.replace(/\n{4,}/g, '\n\n\n');
+};
 
 /**
  * Sanitize general text content that will be inserted into prompts
@@ -251,62 +284,36 @@ export function sanitizeFilePath(filePath: string, allowedPrefix: string): strin
  * sanitizeTextContent('This tool helps with:\n- Feature A\n- Feature B')
  * // Returns: 'This tool helps with:\n- Feature A\n- Feature B' (preserved)
  */
-export function sanitizeTextContent(
+export const sanitizeTextContent = (
   text: string,
   options: {
     maxLength?: number;
     preserveMarkdown?: boolean;
     stripNewlines?: boolean;
   } = {},
-): string {
+): string => {
   if (!text || typeof text !== 'string') {
     return '';
   }
 
-  let sanitized = text;
-
-  // Apply length limit (default: 10000 characters)
   const maxLength = options.maxLength ?? 10000;
-  if (sanitized.length > maxLength) {
-    sanitized = sanitized.slice(0, maxLength) + '... [truncated for length]';
-  }
+  let sanitized = applyLengthLimit(text, maxLength);
 
-  // Remove role-switching attempts
-  for (const pattern of ROLE_SWITCH_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '[removed]');
-  }
-
-  // Remove instruction override attempts
-  for (const pattern of INSTRUCTION_OVERRIDE_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '[removed]');
-  }
-
-  // Remove delimiter injection attempts
-  for (const pattern of DELIMITER_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '[removed]');
-  }
-
-  // Remove context confusion patterns
-  for (const pattern of CONTEXT_CONFUSION_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '\n');
-  }
+  // Remove various injection patterns
+  sanitized = removePatterns(sanitized, ROLE_SWITCH_PATTERNS, '[removed]');
+  sanitized = removePatterns(sanitized, INSTRUCTION_OVERRIDE_PATTERNS, '[removed]');
+  sanitized = removePatterns(sanitized, DELIMITER_PATTERNS, '[removed]');
+  sanitized = removePatterns(sanitized, CONTEXT_CONFUSION_PATTERNS, '\n');
 
   // Remove encoded payloads (likely obfuscated injections)
   sanitized = sanitized.replace(ENCODED_PATTERN, '[removed encoded content]');
 
-  // Strip excessive newlines (more than 3 consecutive)
-  sanitized = sanitized.replace(/\n{4,}/g, '\n\n\n');
-
-  // Optionally strip all newlines (for single-line fields)
-  if (options.stripNewlines) {
-    sanitized = sanitized.replace(/\n/g, ' ').replace(/\s+/g, ' ');
-  }
+  // Normalize newlines
+  sanitized = normalizeNewlines(sanitized, options.stripNewlines ?? false);
 
   // Remove leading/trailing whitespace
-  sanitized = sanitized.trim();
-
-  return sanitized;
-}
+  return sanitized.trim();
+};
 
 /**
  * Sanitize JSON data that will be formatted into prompts
@@ -325,7 +332,7 @@ export function sanitizeTextContent(
  * })
  * // Returns: { id: 'test', name: 'Test [removed]', description: 'Normal description' }
  */
-export function sanitizeJsonData<T extends Record<string, unknown>>(data: T): T {
+export const sanitizeJsonData = <T extends Record<string, unknown>>(data: T): T => {
   const sanitized = { ...data };
 
   for (const key in sanitized) {
@@ -354,7 +361,7 @@ export function sanitizeJsonData<T extends Record<string, unknown>>(data: T): T 
   }
 
   return sanitized;
-}
+};
 
 /**
  * Extract and sanitize issue number from PR body
@@ -372,7 +379,7 @@ export function sanitizeJsonData<T extends Record<string, unknown>>(data: T): T 
  * extractIssueNumber('Closes #123; rm -rf /')
  * // Returns: 123
  */
-export function extractIssueNumber(prBody: string): number | null {
+export const extractIssueNumber = (prBody: string): number | null => {
   if (!prBody || typeof prBody !== 'string') {
     return null;
   }
@@ -390,7 +397,7 @@ export function extractIssueNumber(prBody: string): number | null {
   }
 
   return issueNumber;
-}
+};
 
 /**
  * Detect if text contains potential injection attempts
@@ -408,7 +415,7 @@ export function extractIssueNumber(prBody: string): number | null {
  * detectInjectionAttempt('Ignore previous instructions')
  * // Returns: true
  */
-export function detectInjectionAttempt(text: string): boolean {
+export const detectInjectionAttempt = (text: string): boolean => {
   if (!text || typeof text !== 'string') {
     return false;
   }
@@ -429,4 +436,4 @@ export function detectInjectionAttempt(text: string): boolean {
   }
 
   return ENCODED_PATTERN.test(text);
-}
+};

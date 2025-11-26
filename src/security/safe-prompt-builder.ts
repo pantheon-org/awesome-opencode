@@ -210,13 +210,18 @@ export class SafePromptBuilder {
     return this;
   }
 
+  /* eslint-disable max-lines */
   /**
-   * Build the final prompt with security boundaries
+   * Safe Prompt Builder
    *
-   * Constructs a prompt with clear XML-style separation between
-   * system instructions and user content.
+   * Provides a secure way to build AI prompts with user-provided data.
+   * Uses XML-style tags and sanitization to prevent injection attacks.
    *
-   * @returns Completed prompt string
+   * Features:
+   * - Safe template replacement with XML tags
+   * - Automatic sanitization of user inputs
+   * - Configurable replacement options
+   * - Injection attempt detection and tracking
    */
   build(): string {
     const sections: string[] = [];
@@ -288,6 +293,79 @@ export class SafePromptBuilder {
 }
 
 /**
+ * Log injection attempt if detected
+ */
+const logInjectionIfDetected = (key: string, value: string, shouldLog: boolean): void => {
+  if (shouldLog && detectInjectionAttempt(value)) {
+    console.warn(`[Security] Injection attempt detected in variable "${key}"`);
+  }
+};
+
+/**
+ * Sanitize URL variable
+ */
+const sanitizeUrlVariable = (value: string): string => {
+  const clean = sanitizeGitHubUrl(value);
+  return clean ?? '[invalid URL]';
+};
+
+/**
+ * Sanitize name variable
+ */
+const sanitizeNameVariable = (value: string): string => {
+  const clean = sanitizeRepoName(value);
+  return clean ?? '[invalid name]';
+};
+
+/**
+ * Sanitize file path variable
+ */
+const sanitizeFileVariable = (value: string): string => {
+  return sanitizeTextContent(value, {
+    maxLength: 200,
+    stripNewlines: true,
+  });
+};
+
+/**
+ * Sanitize number variable
+ */
+const sanitizeNumberVariable = (value: string): string => {
+  const numOnly = value.replace(/[^0-9]/g, '');
+  return numOnly || '0';
+};
+
+/**
+ * Sanitize general text variable
+ */
+const sanitizeGeneralVariable = (value: string, maxLength: number): string => {
+  return sanitizeTextContent(value, { maxLength });
+};
+
+/**
+ * Sanitize a single variable based on its key pattern
+ */
+const sanitizeVariable = (key: string, value: string, maxLength: number): string => {
+  if (key.includes('URL') || key.includes('REPO_URL')) {
+    return sanitizeUrlVariable(value);
+  }
+
+  if (key.includes('REPO_NAME') || key.includes('NAME')) {
+    return sanitizeNameVariable(value);
+  }
+
+  if (key.includes('FILE') || key.includes('PATH')) {
+    return sanitizeFileVariable(value);
+  }
+
+  if (key.includes('NUMBER') || key.includes('ISSUE')) {
+    return sanitizeNumberVariable(value);
+  }
+
+  return sanitizeGeneralVariable(value, maxLength);
+};
+
+/**
  * Helper function: Build a safe template replacement map
  *
  * Creates a sanitized map of template variables for safe string replacement.
@@ -309,45 +387,20 @@ export class SafePromptBuilder {
  *   prompt = prompt.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
  * }
  */
-export function buildSafeReplacements(
+export const buildSafeReplacements = (
   variables: Record<string, string>,
   options: TemplateOptions = {},
-): Record<string, string> {
+): Record<string, string> => {
   const sanitized: Record<string, string> = {};
+  const maxLength = options.maxLength ?? 10000;
 
   for (const [key, value] of Object.entries(variables)) {
-    // Detect injections
-    if (options.logInjections && detectInjectionAttempt(value)) {
-      console.warn(`[Security] Injection attempt detected in variable "${key}"`);
-    }
-
-    // Apply appropriate sanitization based on variable type
-    if (key.includes('URL') || key.includes('REPO_URL')) {
-      const clean = sanitizeGitHubUrl(value);
-      sanitized[key] = clean ?? '[invalid URL]';
-    } else if (key.includes('REPO_NAME') || key.includes('NAME')) {
-      const clean = sanitizeRepoName(value);
-      sanitized[key] = clean ?? '[invalid name]';
-    } else if (key.includes('FILE') || key.includes('PATH')) {
-      // File paths need a prefix, so just do basic sanitization
-      sanitized[key] = sanitizeTextContent(value, {
-        maxLength: 200,
-        stripNewlines: true,
-      });
-    } else if (key.includes('NUMBER') || key.includes('ISSUE')) {
-      // Numbers should be numeric only
-      const numOnly = value.replace(/[^0-9]/g, '');
-      sanitized[key] = numOnly || '0';
-    } else {
-      // General text content
-      sanitized[key] = sanitizeTextContent(value, {
-        maxLength: options.maxLength ?? 10000,
-      });
-    }
+    logInjectionIfDetected(key, value, options.logInjections ?? false);
+    sanitized[key] = sanitizeVariable(key, value, maxLength);
   }
 
   return sanitized;
-}
+};
 
 /**
  * Helper function: Replace template variables safely
@@ -365,11 +418,11 @@ export function buildSafeReplacements(
  *   { REPO_URL: repoUrl, ISSUE_NUMBER: String(issueNumber) }
  * );
  */
-export function safeTemplateReplace(
+export const safeTemplateReplace = (
   template: string,
   variables: Record<string, string>,
   options: TemplateOptions = {},
-): string {
+): string => {
   const safeVars = buildSafeReplacements(variables, options);
 
   let result = template;
@@ -381,7 +434,7 @@ export function safeTemplateReplace(
   }
 
   return result;
-}
+};
 
 /**
  * Create a safe prompt from a template file
@@ -401,10 +454,10 @@ export function safeTemplateReplace(
  *   { logInjections: true }
  * );
  */
-export function createSafePrompt(
+export const createSafePrompt = (
   template: string,
   variables: Record<string, string>,
   options: TemplateOptions = {},
-): string {
+): string => {
   return safeTemplateReplace(template, variables, options);
-}
+};

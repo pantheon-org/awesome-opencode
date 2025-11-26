@@ -21,20 +21,20 @@ import { loadSecurityConfig } from './config';
  * Get the directory where security logs are stored
  * @returns Absolute path to security logs directory
  */
-export function getSecurityLogsDir(): string {
+export const getSecurityLogsDir = (): string => {
   return join(process.cwd(), 'data', 'security-logs');
-}
+};
 
 /**
  * Ensure security logs directory exists
  * Creates the directory if it doesn't exist
  */
-export function ensureSecurityLogsDir(): void {
+export const ensureSecurityLogsDir = (): void => {
   const logDir = getSecurityLogsDir();
   if (!existsSync(logDir)) {
     mkdirSync(logDir, { recursive: true });
   }
-}
+};
 
 /**
  * Generate content hash for privacy
@@ -43,9 +43,9 @@ export function ensureSecurityLogsDir(): void {
  * @param content - Content to hash
  * @returns First 8 characters of SHA-256 hash
  */
-export function generateContentHash(content: string): string {
+export const generateContentHash = (content: string): string => {
   return createHash('sha256').update(content).digest('hex').slice(0, 8);
-}
+};
 
 /**
  * Get log file path for a specific date
@@ -53,10 +53,10 @@ export function generateContentHash(content: string): string {
  * @param date - Date for log file (defaults to today)
  * @returns Absolute path to log file
  */
-export function getLogFilePath(date: Date = new Date()): string {
+export const getLogFilePath = (date: Date = new Date()): string => {
   const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
   return join(getSecurityLogsDir(), `injections-${dateStr}.jsonl`);
-}
+};
 
 /**
  * Track an injection attempt
@@ -76,7 +76,7 @@ export function getLogFilePath(date: Date = new Date()): string {
  * });
  * ```
  */
-export function trackInjectionAttempt(attempt: InjectionAttempt): void {
+export const trackInjectionAttempt = (attempt: InjectionAttempt): void => {
   const config = loadSecurityConfig();
 
   // Check if logging is enabled
@@ -91,7 +91,7 @@ export function trackInjectionAttempt(attempt: InjectionAttempt): void {
 
   // Atomic append (safe for concurrent writes)
   appendFileSync(logFile, logEntry, { encoding: 'utf-8' });
-}
+};
 
 /**
  * Clean up old log files based on retention policy
@@ -106,7 +106,7 @@ export function trackInjectionAttempt(attempt: InjectionAttempt): void {
  * console.log(`Deleted ${deleted} old log files`);
  * ```
  */
-export function cleanupOldLogs(retentionDays?: number): number {
+export const cleanupOldLogs = (retentionDays?: number): number => {
   const config = loadSecurityConfig();
   const retention = retentionDays ?? config.logging.retentionDays;
   const logDir = getSecurityLogsDir();
@@ -139,7 +139,68 @@ export function cleanupOldLogs(retentionDays?: number): number {
   }
 
   return deletedCount;
-}
+};
+
+/**
+ * Check if injection log file matches pattern and is within date range
+ */
+const isInjectionLogInDateRange = (
+  fileName: string,
+  startStr: string | undefined,
+  endStr: string,
+): boolean => {
+  const match = fileName.match(/^injections-(\d{4}-\d{2}-\d{2})\.jsonl$/);
+  if (!match) {
+    return false;
+  }
+
+  const fileDate = match[1];
+
+  if (startStr && fileDate < startStr) {
+    return false;
+  }
+  if (fileDate > endStr) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Parse injection attempts from file content
+ */
+const parseInjectionLines = (content: string): InjectionAttempt[] => {
+  const attempts: InjectionAttempt[] = [];
+  const lines = content.trim().split('\n');
+
+  for (const line of lines) {
+    if (!line.trim()) {
+      continue;
+    }
+
+    try {
+      const attempt = JSON.parse(line) as InjectionAttempt;
+      attempts.push(attempt);
+    } catch (parseError) {
+      console.error(`Failed to parse log line: ${line}`, parseError);
+    }
+  }
+
+  return attempts;
+};
+
+/**
+ * Read and parse a single injection log file
+ */
+const readInjectionLogFile = (filePath: string): InjectionAttempt[] => {
+  try {
+    const content = require('node:fs').readFileSync(filePath, 'utf-8');
+    return parseInjectionLines(content);
+  } catch (readError) {
+    console.error(`Failed to read log file: ${filePath}`, readError);
+    return [];
+  }
+};
 
 /**
  * Parse all injection attempts from log files
@@ -156,10 +217,10 @@ export function cleanupOldLogs(retentionDays?: number): number {
  * const attempts = readInjectionAttempts(weekAgo);
  * ```
  */
-export function readInjectionAttempts(
+export const readInjectionAttempts = (
   startDate?: Date,
   endDate: Date = new Date(),
-): InjectionAttempt[] {
+): InjectionAttempt[] => {
   const logDir = getSecurityLogsDir();
 
   if (!existsSync(logDir)) {
@@ -173,47 +234,17 @@ export function readInjectionAttempts(
   const files = readdirSync(logDir);
 
   for (const file of files) {
-    const match = file.match(/^injections-(\d{4}-\d{2}-\d{2})\.jsonl$/);
-    if (!match) {
+    if (!isInjectionLogInDateRange(file, startStr, endStr)) {
       continue;
     }
 
-    const fileDate = match[1];
-
-    // Filter by date range
-    if (startStr && fileDate < startStr) {
-      continue;
-    }
-    if (fileDate > endStr) {
-      continue;
-    }
-
-    // Read and parse log file
     const filePath = join(logDir, file);
-    try {
-      const content = require('node:fs').readFileSync(filePath, 'utf-8');
-      const lines = content.trim().split('\n');
-
-      for (const line of lines) {
-        if (!line.trim()) {
-          continue;
-        }
-
-        try {
-          const attempt = JSON.parse(line) as InjectionAttempt;
-          attempts.push(attempt);
-        } catch (parseError) {
-          // Skip malformed lines
-          console.error(`Failed to parse log line: ${line}`, parseError);
-        }
-      }
-    } catch (readError) {
-      console.error(`Failed to read log file: ${filePath}`, readError);
-    }
+    const fileAttempts = readInjectionLogFile(filePath);
+    attempts.push(...fileAttempts);
   }
 
   return attempts;
-}
+};
 
 /**
  * Get injection attempts for a specific user
@@ -223,14 +254,14 @@ export function readInjectionAttempts(
  * @param endDate - Optional end date
  * @returns Array of injection attempts by user
  */
-export function getInjectionAttemptsByUser(
+export const getInjectionAttemptsByUser = (
   user: string,
   startDate?: Date,
   endDate?: Date,
-): InjectionAttempt[] {
+): InjectionAttempt[] => {
   const allAttempts = readInjectionAttempts(startDate, endDate);
   return allAttempts.filter((attempt) => attempt.user === user);
-}
+};
 
 /**
  * Get unique users with injection attempts
@@ -239,11 +270,11 @@ export function getInjectionAttemptsByUser(
  * @param endDate - Optional end date
  * @returns Array of unique usernames
  */
-export function getUniqueUsersWithAttempts(startDate?: Date, endDate?: Date): string[] {
+export const getUniqueUsersWithAttempts = (startDate?: Date, endDate?: Date): string[] => {
   const attempts = readInjectionAttempts(startDate, endDate);
   const users = new Set(attempts.map((a) => a.user));
   return Array.from(users);
-}
+};
 
 /**
  * Count injection attempts by pattern
@@ -252,10 +283,10 @@ export function getUniqueUsersWithAttempts(startDate?: Date, endDate?: Date): st
  * @param endDate - Optional end date
  * @returns Map of pattern to count
  */
-export function countAttemptsByPattern(
+export const countAttemptsByPattern = (
   startDate?: Date,
   endDate?: Date,
-): Map<InjectionPattern, number> {
+): Map<InjectionPattern, number> => {
   const attempts = readInjectionAttempts(startDate, endDate);
   const counts = new Map<InjectionPattern, number>();
 
@@ -265,7 +296,7 @@ export function countAttemptsByPattern(
   }
 
   return counts;
-}
+};
 
 /**
  * Count injection attempts by workflow type
@@ -274,10 +305,10 @@ export function countAttemptsByPattern(
  * @param endDate - Optional end date
  * @returns Map of workflow type to count
  */
-export function countAttemptsByWorkflow(
+export const countAttemptsByWorkflow = (
   startDate?: Date,
   endDate?: Date,
-): Map<WorkflowType, number> {
+): Map<WorkflowType, number> => {
   const attempts = readInjectionAttempts(startDate, endDate);
   const counts = new Map<WorkflowType, number>();
 
@@ -287,4 +318,4 @@ export function countAttemptsByWorkflow(
   }
 
   return counts;
-}
+};

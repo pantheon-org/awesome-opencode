@@ -60,17 +60,17 @@ const validate = ajv.compile(schema);
 /**
  * Format AJV error for human readability
  */
-function formatAjvError(error: ErrorObject): string {
+const formatAjvError = (error: ErrorObject): string => {
   const path = error.instancePath || '/';
   const message = error.message || 'validation failed';
   const params = error.params ? ` (${JSON.stringify(error.params)})` : '';
   return `${path}: ${message}${params}`;
-}
+};
 
 /**
  * Validate a single theme for injection attempts
  */
-function validateThemeInjection(theme: Theme, errors: string[]): void {
+const validateThemeInjection = (theme: Theme, errors: string[]): void => {
   if (detectInjectionAttempt(theme.id)) {
     errors.push(`Theme "${theme.id}": ID contains potential injection pattern`);
   }
@@ -98,12 +98,12 @@ function validateThemeInjection(theme: Theme, errors: string[]): void {
       }
     }
   }
-}
+};
 
 /**
  * Validate themes metadata for injection attempts
  */
-function validateThemesMetadata(themesData: ThemesData, errors: string[]): void {
+const validateThemesMetadata = (themesData: ThemesData, errors: string[]): void => {
   const suggestedTags = themesData.suggested_tags || [];
   for (const tag of suggestedTags) {
     if (detectInjectionAttempt(tag)) {
@@ -117,7 +117,7 @@ function validateThemesMetadata(themesData: ThemesData, errors: string[]): void 
       errors.push(`Seed theme "${seedTheme}" contains potential injection pattern`);
     }
   }
-}
+};
 
 /**
  * Validate themes data
@@ -134,7 +134,7 @@ function validateThemesMetadata(themesData: ThemesData, errors: string[]): void 
  * }
  * ```
  */
-export function validateThemes(data: unknown): ValidationResult {
+export const validateThemes = (data: unknown): ValidationResult => {
   const errors: string[] = [];
 
   // Step 1: Schema validation
@@ -159,7 +159,7 @@ export function validateThemes(data: unknown): ValidationResult {
     valid: errors.length === 0,
     errors,
   };
-}
+};
 
 /**
  * Validate themes from file path
@@ -175,7 +175,7 @@ export function validateThemes(data: unknown): ValidationResult {
  * }
  * ```
  */
-export function validateThemesFile(filePath: string): ValidationResult {
+export const validateThemesFile = (filePath: string): ValidationResult => {
   try {
     const content = readFileSync(filePath, 'utf-8');
     const data = JSON.parse(content);
@@ -188,4 +188,4 @@ export function validateThemesFile(filePath: string): ValidationResult {
       ],
     };
   }
-}
+};

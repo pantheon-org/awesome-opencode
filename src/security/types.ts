@@ -126,13 +126,70 @@ export interface SecurityConfig {
 }
 
 /**
+ * GitHub REST API interface for issues
+ */
+export interface GitHubIssuesAPI {
+  create: (params: {
+    owner: string;
+    repo: string;
+    title: string;
+    body: string;
+    labels?: string[];
+  }) => Promise<{ data: { number: number } }>;
+  createComment: (params: {
+    owner: string;
+    repo: string;
+    issue_number: number;
+    body: string;
+  }) => Promise<{ data: Record<string, unknown> }>;
+  addLabels: (params: {
+    owner: string;
+    repo: string;
+    issue_number: number;
+    labels: string[];
+  }) => Promise<{ data: Record<string, unknown> }>;
+  update: (params: {
+    owner: string;
+    repo: string;
+    issue_number: number;
+    state: string;
+    labels?: string[];
+  }) => Promise<{ data: Record<string, unknown> }>;
+  lock: (params: {
+    owner: string;
+    repo: string;
+    issue_number: number;
+    lock_reason: string;
+  }) => Promise<{ data: Record<string, unknown> }>;
+}
+
+/**
+ * GitHub API client interface
+ */
+export interface GitHubClient {
+  rest: {
+    issues: GitHubIssuesAPI;
+  };
+}
+
+/**
+ * GitHub Actions context interface
+ */
+export interface GitHubContext {
+  repo: {
+    owner: string;
+    repo: string;
+  };
+}
+
+/**
  * Parameters for creating a security alert
  */
 export interface SecurityAlertParams {
   /** GitHub API client (from actions/github-script) */
-  github: any;
+  github: GitHubClient;
   /** GitHub Actions context */
-  context: any;
+  context: GitHubContext;
   /** Username who triggered alerts */
   user: string;
   /** Number of attempts detected */

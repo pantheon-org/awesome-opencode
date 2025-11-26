@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * Security alerting module
  *
@@ -23,7 +24,7 @@ import { loadSecurityConfig } from './config';
  * @param patterns - Array of injection patterns
  * @returns Formatted markdown list
  */
-function formatPatterns(patterns: InjectionPattern[]): string {
+const formatPatterns = (patterns: InjectionPattern[]): string => {
   const patternDescriptions: Record<InjectionPattern, string> = {
     'role-switching': 'Role Switching (e.g., "ignore previous instructions")',
     'instruction-override': 'Instruction Override (e.g., "your new task is")',
@@ -35,7 +36,7 @@ function formatPatterns(patterns: InjectionPattern[]): string {
   };
 
   return patterns.map((pattern) => `- **${patternDescriptions[pattern] || pattern}**`).join('\n');
-}
+};
 
 /**
  * Create a security alert issue
@@ -55,7 +56,7 @@ function formatPatterns(patterns: InjectionPattern[]): string {
  * });
  * ```
  */
-export async function createSecurityAlert(params: SecurityAlertParams): Promise<void> {
+export const createSecurityAlert = async (params: SecurityAlertParams): Promise<void> => {
   const { github, context, user, attempts, patterns, issueNumber } = params;
   const config = loadSecurityConfig();
 
@@ -125,7 +126,7 @@ The user has been rate-limited and their submission(s) have been flagged for rev
   } catch (error) {
     console.error('Failed to create security alert:', error);
   }
-}
+};
 
 /**
  * Post a warning comment on the source issue/PR
@@ -145,7 +146,7 @@ The user has been rate-limited and their submission(s) have been flagged for rev
  * });
  * ```
  */
-export async function postSecurityWarning(params: SecurityAlertParams): Promise<void> {
+export const postSecurityWarning = async (params: SecurityAlertParams): Promise<void> => {
   const { github, context, user, attempts, patterns, issueNumber } = params;
   const config = loadSecurityConfig();
 
@@ -197,7 +198,7 @@ This submission has been rate-limited (${attempts} attempts detected). Please re
   } catch (error) {
     console.error('Failed to post security warning:', error);
   }
-}
+};
 
 /**
  * Add security labels to an issue/PR
@@ -205,7 +206,7 @@ This submission has been rate-limited (${attempts} attempts detected). Please re
  *
  * @param params - Alert parameters
  */
-export async function addSecurityLabels(params: SecurityAlertParams): Promise<void> {
+export const addSecurityLabels = async (params: SecurityAlertParams): Promise<void> => {
   const { github, context, issueNumber } = params;
 
   if (!issueNumber) {
@@ -222,7 +223,7 @@ export async function addSecurityLabels(params: SecurityAlertParams): Promise<vo
   } catch (error) {
     console.error('Failed to add security labels:', error);
   }
-}
+};
 
 /**
  * Close and lock an issue/PR that exceeded rate limits
@@ -230,7 +231,7 @@ export async function addSecurityLabels(params: SecurityAlertParams): Promise<vo
  *
  * @param params - Alert parameters
  */
-export async function blockIssue(params: SecurityAlertParams): Promise<void> {
+export const blockIssue = async (params: SecurityAlertParams): Promise<void> => {
   const { github, context, issueNumber } = params;
 
   if (!issueNumber) {
@@ -269,7 +270,7 @@ For more information, see our [Security Policy](../SECURITY.md).`,
   } catch (error) {
     console.error('Failed to block issue:', error);
   }
-}
+};
 
 /**
  * Send webhook notification for external alerting
@@ -277,7 +278,7 @@ For more information, see our [Security Policy](../SECURITY.md).`,
  *
  * @param params - Alert parameters
  */
-export async function sendWebhookAlert(params: SecurityAlertParams): Promise<void> {
+export const sendWebhookAlert = async (params: SecurityAlertParams): Promise<void> => {
   const { user, attempts, patterns } = params;
   const config = loadSecurityConfig();
 
@@ -334,7 +335,7 @@ export async function sendWebhookAlert(params: SecurityAlertParams): Promise<voi
   } catch (error) {
     console.error('Failed to send webhook alert:', error);
   }
-}
+};
 
 /**
  * Handle a security incident with full alerting
@@ -352,10 +353,10 @@ export async function sendWebhookAlert(params: SecurityAlertParams): Promise<voi
  * await handleSecurityIncident(params, 'high');
  * ```
  */
-export async function handleSecurityIncident(
+export const handleSecurityIncident = async (
   params: SecurityAlertParams,
   severity: 'low' | 'medium' | 'high' = 'medium',
-): Promise<void> {
+): Promise<void> => {
   // Always add security labels
   await addSecurityLabels(params);
 
@@ -374,4 +375,4 @@ export async function handleSecurityIncident(
     await blockIssue(params);
     await sendWebhookAlert(params);
   }
-}
+};
