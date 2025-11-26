@@ -1,0 +1,56 @@
+{
+  "rules": [
+    {
+      "name": "spike-detection",
+      "description": "Detects sudden spikes in injection attempts",
+      "condition": "attempts_last_hour > 10",
+      "action": "create_issue",
+      "severity": "high",
+      "enabled": true
+    },
+    {
+      "name": "new-pattern",
+      "description": "Alerts when a new injection pattern is detected",
+      "condition": "pattern_not_seen_before",
+      "action": "notify",
+      "severity": "medium",
+      "enabled": true
+    },
+    {
+      "name": "repeated-offender",
+      "description": "Blocks users with excessive injection attempts",
+      "condition": "user_attempts > 5 within 24h",
+      "action": "block",
+      "severity": "critical",
+      "enabled": true
+    },
+    {
+      "name": "low-block-rate",
+      "description": "Alerts when block rate falls below threshold",
+      "condition": "block_rate < 70%",
+      "action": "notify",
+      "severity": "medium",
+      "enabled": true
+    },
+    {
+      "name": "increasing-trend",
+      "description": "Detects increasing trend in injection attempts",
+      "condition": "weekly_avg > monthly_avg * 1.5",
+      "action": "notify",
+      "severity": "high",
+      "enabled": true
+    }
+  ],
+  "thresholds": {
+    "hourly_spike": 10,
+    "daily_user_limit": 5,
+    "minimum_block_rate": 70,
+    "trend_increase_factor": 1.5
+  },
+  "notifications": {
+    "issue_creation": true,
+    "comment_on_source": true,
+    "webhook_enabled": false,
+    "webhook_url": null
+  }
+}

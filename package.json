@@ -26,6 +26,9 @@
     "fix:data": "bun run scripts/fix-data.ts",
     "security:report": "bun run src/bin/generate-security-report.ts",
     "security:cleanup": "bun run -e \"import { cleanupOldLogs } from './src/security/track-injections'; cleanupOldLogs();\"",
+    "security:dashboard": "bun run src/bin/generate-security-dashboard.ts",
+    "security:monitor": "bun run src/bin/monitor-security.ts",
+    "security:analyze": "bun run src/bin/analyze-security-history.ts",
     "clean": "rm -rf dist/ .bun-cache/ coverage/",
     "prepare": "lefthook install"
   },

@@ -54,6 +54,29 @@ bun run fix:data
 git commit --no-verify -m "Emergency fix"
 ```
 
+### Security Monitoring
+
+Monitor security events and view the security dashboard:
+
+```bash
+# View auto-generated security dashboard
+open docs/security-dashboard.md
+
+# Generate dashboard with custom time range
+bun run security:dashboard --days 30
+
+# Real-time log monitoring (development)
+bun run security:monitor --level WARN
+
+# Analyze historical security data
+bun run security:analyze --days 90
+
+# Generate detailed security report
+bun run security:report
+```
+
+For more information, see [SECURITY.md](SECURITY.md#security-monitoring-and-logging).
+
 ## Browse by Theme
 
 Discover tools organized by their primary purpose and philosophy:
