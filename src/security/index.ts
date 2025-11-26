@@ -1,5 +1,6 @@
 /**
- * Security module exports for prompt injection prevention
+ * Security module exports for prompt injection prevention,
+ * rate limiting, tracking, and alerting
  */
 
 // Input sanitization exports
@@ -20,3 +21,61 @@ export {
   safeTemplateReplace,
   createSafePrompt,
 } from './safe-prompt-builder';
+
+// Configuration exports
+export { loadSecurityConfig, getConfigPath, hasSecurityConfig } from './config';
+
+// Type exports
+export type {
+  WorkflowType,
+  InjectionPattern,
+  InjectionAttempt,
+  RateLimitConfig,
+  RateLimitEntry,
+  RateLimitState,
+  RateLimitResult,
+  AlertConfig,
+  LogConfig,
+  SecurityConfig,
+  SecurityAlertParams,
+  SecurityReportStats,
+} from './types';
+
+// Tracking exports
+export {
+  trackInjectionAttempt,
+  cleanupOldLogs,
+  readInjectionAttempts,
+  getInjectionAttemptsByUser,
+  getUniqueUsersWithAttempts,
+  countAttemptsByPattern,
+  countAttemptsByWorkflow,
+  generateContentHash,
+  getSecurityLogsDir,
+  ensureSecurityLogsDir,
+  getLogFilePath,
+} from './track-injections';
+
+// Rate limiting exports
+export {
+  checkRateLimit,
+  recordInjectionAttempt,
+  resetRateLimit,
+  getRateLimitStatus,
+  getTrackedEntities,
+  cleanupExpiredEntries,
+  isBlocked,
+  loadRateLimitState,
+  saveRateLimitState,
+  getRateLimitStatePath,
+} from './rate-limit';
+
+// Alerting exports
+export {
+  createSecurityAlert,
+  postSecurityWarning,
+  addSecurityLabels,
+  blockIssue,
+  sendWebhookAlert,
+  handleSecurityIncident,
+} from './alert';

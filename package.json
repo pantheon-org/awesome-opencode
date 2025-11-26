@@ -24,6 +24,8 @@
     "generate:themes": "bun run src/bin/generate-themes.ts",
     "validate:data": "bun run src/bin/validate-data.ts",
     "fix:data": "bun run scripts/fix-data.ts",
+    "security:report": "bun run src/bin/generate-security-report.ts",
+    "security:cleanup": "bun run -e \"import { cleanupOldLogs } from './src/security/track-injections'; cleanupOldLogs();\"",
     "clean": "rm -rf dist/ .bun-cache/ coverage/",
     "prepare": "lefthook install"
   },
