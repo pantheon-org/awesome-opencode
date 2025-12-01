@@ -56,3 +56,9 @@ data/security-logs/
 !.github/workflows/opencode.yml
 !.github/workflows/triage-submission.yml
 !.github/workflows/validate-and-merge.yml
+!.github/workflows/security-tests.yml
+!.github/workflows/security-lint.yml
+!.github/workflows/security-dashboard.yml
+!.github/workflows/security-report.yml
+!.github/workflows/coverage-badge.yml
+!.github/badges/

@@ -1,0 +1,149 @@
+name: Security Dashboard
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allow manual trigger
+    inputs:
+      days:
+        description: 'Number of days to analyze'
+        required: false
+        default: '30'
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  generate-dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Generate security dashboard
+        run: |
+          DAYS=${{ github.event.inputs.days || '30' }}
+          bun run security:dashboard --days $DAYS --output docs/security-dashboard.md
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet docs/security-dashboard.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push dashboard
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/security-dashboard.md
+          git commit -m "chore: update security dashboard [skip ci]"
+          git push
+
+      - name: Check for anomalies
+        id: check_anomalies
+        run: |
+          # Generate analysis report
+          ANALYSIS=$(bun run security:analyze --days 7 --format json)
+
+          # Extract key metrics
+          AVG_PER_DAY=$(echo "$ANALYSIS" | jq -r '.summary.avgPerDay')
+          TREND=$(echo "$ANALYSIS" | jq -r '.trends.trend')
+          CHANGE_PERCENT=$(echo "$ANALYSIS" | jq -r '.trends.changePercent')
+
+          # Check for anomalies
+          ANOMALY_DETECTED=false
+          ANOMALY_MESSAGE=""
+
+          if (( $(echo "$AVG_PER_DAY > 10" | bc -l) )); then
+            ANOMALY_DETECTED=true
+            ANOMALY_MESSAGE="${ANOMALY_MESSAGE}\n- **High Activity:** Average of ${AVG_PER_DAY} attempts per day detected."
+          fi
+
+          if [[ "$TREND" == "increasing" ]] && (( $(echo "$CHANGE_PERCENT > 50" | bc -l) )); then
+            ANOMALY_DETECTED=true
+            ANOMALY_MESSAGE="${ANOMALY_MESSAGE}\n- **Increasing Trend:** Attempts increased by ${CHANGE_PERCENT}%."
+          fi
+
+          echo "anomaly_detected=$ANOMALY_DETECTED" >> $GITHUB_OUTPUT
+          echo "anomaly_message<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$ANOMALY_MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create anomaly issue
+        if: steps.check_anomalies.outputs.anomaly_detected == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const anomalyMessage = `${{ steps.check_anomalies.outputs.anomaly_message }}`;
+
+            // Check if there's already an open anomaly issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security-anomaly'
+            });
+
+            if (issues.data.length === 0) {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🚨 Security Anomaly Detected',
+                body: `# Security Anomaly Alert
+
+            The automated security monitoring system has detected anomalous activity:
+
+            ${anomalyMessage}
+
+            ## Next Steps
+
+            1. Review the [Security Dashboard](../blob/main/docs/security-dashboard.md)
+            2. Run detailed analysis: \`bun run security:analyze --days 30\`
+            3. Check for false positives
+            4. Update detection rules if needed
+
+            **Generated:** ${new Date().toISOString()}
+            **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+                labels: ['security', 'security-anomaly', 'needs-review']
+              });
+            }
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Security Dashboard Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ steps.check_changes.outputs.changed }}" == "true" ]]; then
+            echo "✅ Dashboard updated successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No changes detected in dashboard" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ steps.check_anomalies.outputs.anomaly_detected }}" == "true" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Anomaly Detected**" >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.check_anomalies.outputs.anomaly_message }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View Dashboard](../blob/main/docs/security-dashboard.md)" >> $GITHUB_STEP_SUMMARY

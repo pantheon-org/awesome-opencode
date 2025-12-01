@@ -1,0 +1,143 @@
+name: Security Lint
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - '.github/scripts/**'
+      - '.github/workflows/**'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  security-lint:
+    name: Security Lint Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for hardcoded API keys
+        run: |
+          echo "🔍 Checking for hardcoded API keys..."
+
+          # Check for Anthropic API keys
+          if grep -rE "ANTHROPIC_API_KEY\s*=\s*['\"]sk-ant-" --include="*.ts" --include="*.js" --include="*.cjs" src/ .github/scripts/ 2>/dev/null; then
+            echo "❌ Error: Hardcoded Anthropic API key found!"
+            exit 1
+          fi
+
+          # Check for OpenAI API keys
+          if grep -rE "(OPENAI_API_KEY|openai.*api.*key)\s*=\s*['\"]sk-" --include="*.ts" --include="*.js" --include="*.cjs" src/ .github/scripts/ 2>/dev/null; then
+            echo "❌ Error: Hardcoded OpenAI API key found!"
+            exit 1
+          fi
+
+          # Check for GitHub tokens
+          if grep -rE "(GITHUB_TOKEN|GH_TOKEN)\s*=\s*['\"]gh[pousr]_[a-zA-Z0-9]{36,}" --include="*.ts" --include="*.js" --include="*.cjs" src/ .github/scripts/ 2>/dev/null; then
+            echo "❌ Error: Hardcoded GitHub token found!"
+            exit 1
+          fi
+
+          echo "✅ No hardcoded API keys detected"
+
+      - name: Check for dangerous eval patterns
+        run: |
+          echo "🔍 Checking for dangerous eval() usage..."
+
+          # Check for eval() usage (excluding comments and tests)
+          if grep -rE "^\s*[^/]*eval\s*\(" --include="*.ts" --include="*.js" --include="*.cjs" --exclude="*.test.ts" --exclude="*.test.js" src/ .github/scripts/ 2>/dev/null; then
+            echo "❌ Error: eval() usage found in production code!"
+            echo "💡 eval() is dangerous and should be avoided. Consider using safer alternatives."
+            exit 1
+          fi
+
+          echo "✅ No dangerous eval() patterns detected"
+
+      - name: Check for exec with user input
+        run: |
+          echo "🔍 Checking for dangerous exec patterns..."
+
+          # Check for exec/spawn without sanitization near user input
+          if grep -rE "(exec|spawn)\s*\([^)]*process\.env\." --include="*.ts" --include="*.js" --include="*.cjs" --exclude="*.test.ts" src/ .github/scripts/ 2>/dev/null; then
+            echo "⚠️ Warning: exec/spawn with environment variables detected"
+            echo "💡 Ensure all user inputs are properly sanitized before passing to exec/spawn"
+          fi
+
+          echo "✅ exec pattern check completed"
+
+      - name: Verify sanitization in workflow scripts
+        run: |
+          echo "🔍 Verifying sanitization in workflow scripts..."
+
+          MISSING_SANITIZATION=0
+
+          for script in .github/scripts/*.cjs; do
+            filename=$(basename "$script")
+            
+            # Skip README
+            if [[ "$filename" == "README.md" ]]; then
+              continue
+            fi
+            
+            # Check if script imports or uses sanitization functions
+            if ! grep -qE "(sanitize|safePromptBuilder|detectInjection)" "$script"; then
+              echo "⚠️ Warning: $filename may not use sanitization functions"
+              echo "   Scripts that handle user input should use sanitization"
+              MISSING_SANITIZATION=1
+            else
+              echo "✅ $filename uses sanitization"
+            fi
+          done
+
+          if [ $MISSING_SANITIZATION -eq 1 ]; then
+            echo ""
+            echo "⚠️ Some scripts may be missing sanitization. Please review."
+            echo "💡 All user input should be sanitized using functions from src/security/"
+          fi
+
+      - name: Check for sensitive data in tests
+        run: |
+          echo "🔍 Checking for sensitive data in test files..."
+
+          # Check for real-looking secrets in tests (not obvious fake ones)
+          if grep -rE "(api[_-]?key|password|secret|token)\s*[:=]\s*['\"][a-zA-Z0-9]{32,}['\"]" --include="*.test.ts" --include="*.test.js" src/ tests/ 2>/dev/null | grep -v "fake\|test\|mock\|dummy\|example" -i; then
+            echo "⚠️ Warning: Potential real secrets in test files detected"
+            echo "💡 Use obvious fake values like 'test-key-123' or 'fake-secret' in tests"
+          fi
+
+          echo "✅ Sensitive data check completed"
+
+      - name: Verify security module imports
+        run: |
+          echo "🔍 Verifying security module usage..."
+
+          # Check that files handling external input import security functions
+          WORKFLOW_SCRIPTS=(.github/scripts/*.cjs)
+
+          for script in "${WORKFLOW_SCRIPTS[@]}"; do
+            if [[ -f "$script" ]]; then
+              filename=$(basename "$script")
+              
+              # Check if script handles external input (issue body, PR body, etc.)
+              if grep -qE "(issue.*body|pull_request.*body|payload|user.*input)" "$script"; then
+                if ! grep -qE "(require.*security|import.*security)" "$script"; then
+                  echo "⚠️ Warning: $filename handles external input but doesn't import security modules"
+                fi
+              fi
+            fi
+          done
+
+          echo "✅ Security module import check completed"
+
+      - name: Security lint summary
+        run: |
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Security Lint Checks Complete"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "All security checks passed or completed with warnings."
+          echo "Review any warnings above to ensure security best practices."

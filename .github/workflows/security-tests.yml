@@ -1,0 +1,124 @@
+name: Security Tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/security/**'
+      - 'src/validation/**'
+      - '.github/scripts/**'
+      - 'tests/**'
+      - 'scripts/coverage-ratchet.ts'
+      - '.github/workflows/security-tests.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  security-tests:
+    name: Run Security Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        bun-version: ['1.1.38', 'latest']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run all tests with coverage
+        run: bun test --coverage
+
+      - name: Check coverage ratchet
+        run: bun run test:ratchet
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-${{ matrix.os }}-${{ matrix.bun-version }}
+          path: coverage/
+          retention-days: 7
+
+  coverage-report:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: security-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: bun test --coverage > coverage-output.txt 2>&1 || true
+
+      - name: Generate coverage markdown
+        run: |
+          echo "## 🔒 Security Test Coverage Report" > coverage-report.md
+          echo "" >> coverage-report.md
+          echo "✅ All security tests passed on ${{ matrix.os }} with Bun ${{ matrix.bun-version }}" >> coverage-report.md
+          echo "" >> coverage-report.md
+          echo "### Coverage Details" >> coverage-report.md
+          echo "" >> coverage-report.md
+          echo '```' >> coverage-report.md
+          grep -A 20 "All files\|src/security\|src/validation" coverage-output.txt | head -30 >> coverage-report.md || echo "Coverage data unavailable" >> coverage-report.md
+          echo '```' >> coverage-report.md
+          echo "" >> coverage-report.md
+          echo "📊 **Overall Coverage:** $(grep 'All files' coverage-output.txt | awk '{print $3}' || echo 'N/A')" >> coverage-report.md
+          echo "" >> coverage-report.md
+          echo "---" >> coverage-report.md
+          echo "*Coverage ratchet enforces that coverage never decreases*" >> coverage-report.md
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('coverage-report.md', 'utf8');
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Security Test Coverage Report')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: report
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: report
+              });
+            }

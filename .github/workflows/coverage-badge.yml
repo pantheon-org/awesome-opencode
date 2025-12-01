@@ -1,0 +1,136 @@
+name: Coverage Badge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/coverage-ratchet.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  coverage-badge:
+    name: Update Coverage Badge
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: bun test --coverage > coverage-output.txt 2>&1 || true
+
+      - name: Extract coverage percentages
+        id: coverage
+        run: |
+          # Extract overall coverage
+          OVERALL_COVERAGE=$(grep "All files" coverage-output.txt | awk '{print $3}' | sed 's/%//' || echo "0")
+          echo "overall=$OVERALL_COVERAGE" >> $GITHUB_OUTPUT
+
+          # Extract security module coverage
+          SECURITY_COVERAGE=$(grep "src/security" coverage-output.txt | awk '{print $3}' | head -1 | sed 's/%//' || echo "0")
+          echo "security=$SECURITY_COVERAGE" >> $GITHUB_OUTPUT
+
+          # Determine badge color based on coverage
+          if (( $(echo "$OVERALL_COVERAGE >= 90" | bc -l) )); then
+            echo "color=brightgreen" >> $GITHUB_OUTPUT
+          elif (( $(echo "$OVERALL_COVERAGE >= 75" | bc -l) )); then
+            echo "color=green" >> $GITHUB_OUTPUT
+          elif (( $(echo "$OVERALL_COVERAGE >= 60" | bc -l) )); then
+            echo "color=yellow" >> $GITHUB_OUTPUT
+          else
+            echo "color=red" >> $GITHUB_OUTPUT
+          fi
+
+          # Determine security badge color
+          if (( $(echo "$SECURITY_COVERAGE >= 95" | bc -l) )); then
+            echo "security_color=brightgreen" >> $GITHUB_OUTPUT
+          elif (( $(echo "$SECURITY_COVERAGE >= 90" | bc -l) )); then
+            echo "security_color=green" >> $GITHUB_OUTPUT
+          elif (( $(echo "$SECURITY_COVERAGE >= 80" | bc -l) )); then
+            echo "security_color=yellow" >> $GITHUB_OUTPUT
+          else
+            echo "security_color=red" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create coverage badges directory
+        run: mkdir -p .github/badges
+
+      - name: Generate overall coverage badge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const coverage = '${{ steps.coverage.outputs.overall }}';
+            const color = '${{ steps.coverage.outputs.color }}';
+
+            const badge = {
+              schemaVersion: 1,
+              label: 'coverage',
+              message: `${coverage}%`,
+              color: color
+            };
+
+            fs.writeFileSync('.github/badges/coverage.json', JSON.stringify(badge, null, 2));
+            console.log(`Generated coverage badge: ${coverage}% (${color})`);
+
+      - name: Generate security coverage badge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const coverage = '${{ steps.coverage.outputs.security }}';
+            const color = '${{ steps.coverage.outputs.security_color }}';
+
+            const badge = {
+              schemaVersion: 1,
+              label: 'security coverage',
+              message: `${coverage}%`,
+              color: color
+            };
+
+            fs.writeFileSync('.github/badges/security-coverage.json', JSON.stringify(badge, null, 2));
+            console.log(`Generated security coverage badge: ${coverage}% (${color})`);
+
+      - name: Commit badge files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          if [[ -n $(git status --porcelain .github/badges/) ]]; then
+            git add .github/badges/
+            git commit -m "chore: update coverage badges [skip ci]"
+            git push
+            echo "✅ Coverage badges updated"
+          else
+            echo "ℹ️ No changes to coverage badges"
+          fi
+
+      - name: Display coverage summary
+        run: |
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 Coverage Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Overall Coverage:  ${{ steps.coverage.outputs.overall }}%"
+          echo "Security Coverage: ${{ steps.coverage.outputs.security }}%"
+          echo ""
+          echo "Badge Color:          ${{ steps.coverage.outputs.color }}"
+          echo "Security Badge Color: ${{ steps.coverage.outputs.security_color }}"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
