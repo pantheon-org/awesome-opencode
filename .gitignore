@@ -47,8 +47,6 @@ data/security-logs/
 !.github/ISSUE_TEMPLATE/submit-tool.yml
 !.github/prompts/categorize-tool.md
 !.github/prompts/triage-relevance.md
-!.github/scripts/load-data.sh
-!.github/scripts/load-prompts.sh
 !.github/scripts/post-categorization-comment.cjs
 !.github/scripts/post-triage-comment.cjs
 !.github/scripts/post-validation-comment.cjs
