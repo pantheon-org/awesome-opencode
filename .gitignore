@@ -42,6 +42,8 @@ data/security-logs/
 
 # Context files (local planning and design)
 .context/
+# EXCEPT: Track improvements documentation
+!.context/improvements/
 
 # Github
 !.github/ISSUE_TEMPLATE/submit-tool.yml
