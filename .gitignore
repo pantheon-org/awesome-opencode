@@ -42,8 +42,11 @@ data/security-logs/
 
 # Context files (local planning and design)
 .context/
-# EXCEPT: Track improvements documentation
+# EXCEPT: Track improvements documentation and refactoring plan
 !.context/improvements/
+!.context/plan/
+!.context/BRANCH_STRATEGY.md
+!.context/DEPENDENCY_MAP.md
 
 # Github
 !.github/ISSUE_TEMPLATE/submit-tool.yml
