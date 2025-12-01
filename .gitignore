@@ -52,6 +52,7 @@ data/security-logs/
 !.github/scripts/post-categorization-comment.cjs
 !.github/scripts/post-triage-comment.cjs
 !.github/scripts/post-validation-comment.cjs
+!.github/scripts/check-repo-config.cjs
 !.github/workflows/categorize-tool.yml
 !.github/workflows/opencode.yml
 !.github/workflows/triage-submission.yml
@@ -61,4 +62,5 @@ data/security-logs/
 !.github/workflows/security-dashboard.yml
 !.github/workflows/security-report.yml
 !.github/workflows/coverage-badge.yml
+!.github/workflows/chores-repo-config.yml
 !.github/badges/
