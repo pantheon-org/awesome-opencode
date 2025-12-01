@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "label": "security coverage",
+  "message": "%",
+  "color": "red"
+}
