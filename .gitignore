@@ -40,6 +40,9 @@ data/security-logs/
 # Bun cache
 .bun-cache/
 
+# Context files (local planning and design)
+.context/
+
 # Github
 !.github/ISSUE_TEMPLATE/submit-tool.yml
 !.github/prompts/categorize-tool.md
