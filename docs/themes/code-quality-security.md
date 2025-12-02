@@ -2,7 +2,7 @@
 theme_id: code-quality-security
 status: active
 tool_count: 0
-last_updated: 2025-11-25
+last_updated: 2025-12-02
 ---
 
 # Code Quality & Security
@@ -11,7 +11,7 @@ Tools that analyze code for quality issues, security vulnerabilities, and enforc
 
 ## Tools
 
-_No tools have been added to this theme yet._
+*No tools have been added to this theme yet.*
 
 ## Keywords
 
@@ -24,4 +24,4 @@ _No tools have been added to this theme yet._
 
 ---
 
-_This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)_
+*This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)*
