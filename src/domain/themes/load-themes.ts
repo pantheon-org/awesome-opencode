@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { ThemesConfig } from './types';
-import { validateThemes } from '../validation';
+import { validateThemes } from '../../validation';
 
 /**
  * Load themes from data/themes.json

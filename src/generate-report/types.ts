@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ThemeCandidateSchema } from '../theme';
+import { ThemeCandidateSchema } from '../domain/themes';
 
 /**
  * Zod schema for tag statistics

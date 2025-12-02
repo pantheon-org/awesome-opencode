@@ -7,8 +7,8 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { loadCategories } from '../category';
-import { getActiveThemes } from '../theme';
+import { loadCategories } from '../domain/categories';
+import { getActiveThemes } from '../domain/themes';
 
 const README_PATH = join(process.cwd(), 'README.md');
 

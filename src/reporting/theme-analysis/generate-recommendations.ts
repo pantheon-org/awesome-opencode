@@ -5,7 +5,7 @@
  * Generates theme recommendations based on tool analysis
  */
 
-import { generateAllThemePages } from '../../theme';
+import { generateAllThemePages } from '../../domain/themes';
 
 /**
  * Generate theme recommendations

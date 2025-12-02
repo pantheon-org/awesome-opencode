@@ -1,4 +1,5 @@
-import { getAllTools, getTagStats, normalizeTag } from '../tag';
+import { getAllTools } from '../tools';
+import { getTagStats, normalizeTag } from '../tags';
 import { ThemeCandidate } from './types';
 
 /**

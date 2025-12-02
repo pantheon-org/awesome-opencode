@@ -5,7 +5,7 @@
  * by scanning tools in docs/tools/ and organizing them by theme
  */
 
-import { generateAllThemePages } from '../theme';
+import { generateAllThemePages } from '../domain/themes';
 
 // Run the script
 try {

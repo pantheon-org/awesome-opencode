@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { CategoriesConfig, Category } from './types';
 import { readFileSync, existsSync } from 'node:fs';
-import { validateCategories } from '../validation';
+import { validateCategories } from '../../validation';
 
 /**
  * Load categories from data/categories.json

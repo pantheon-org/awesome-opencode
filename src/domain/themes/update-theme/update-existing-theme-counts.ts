@@ -1,4 +1,5 @@
-import { getAllTools, normalizeTag } from '../../tag';
+import { getAllTools } from '../../tools';
+import { normalizeTag } from '../../tags';
 import { loadThemes } from '../load-themes';
 import { saveThemes } from '../save-themes';
 

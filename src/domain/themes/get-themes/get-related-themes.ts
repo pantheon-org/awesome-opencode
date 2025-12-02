@@ -1,4 +1,4 @@
-import { getToolsForTheme, ToolInfo } from '../../tool';
+import { getToolsForTheme, ToolInfo } from '../../tools';
 import { Theme } from '../types';
 
 /**

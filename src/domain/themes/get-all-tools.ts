@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { ToolInfo } from '../tool';
+import { ToolInfo } from '../tools';
 import { parseFrontmatter } from './parse-frontmatter';
 import { extractDescription } from './extract-description';
 

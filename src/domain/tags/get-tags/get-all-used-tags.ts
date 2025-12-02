@@ -1,4 +1,4 @@
-import { getAllTools } from '../../tool';
+import { getAllTools } from '../../tools';
 import { normalizeTag } from '../normalize-tag';
 
 /**
