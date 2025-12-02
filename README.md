@@ -7,10 +7,65 @@
 
 A curated list of tools related to [OpenCode](https://opencode.ai/) and similar AI-powered coding assistants.
 
+> **⚠️ Breaking Changes Notice**: This project recently underwent a major architecture refactoring. If you were using imports from this package, please refer to the [Migration Guide](docs/MIGRATION_GUIDE.md) for updated import paths.
+
 ## Contributing
 
 Found an awesome tool? Submit it by [creating an issue](../../issues/new/choose) with the tool's GitHub repository URL.
 Our automated workflow will review, categorize, and add it to the list.
+
+For detailed contributing guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Architecture
+
+This project is organized around clear domain boundaries for maintainability and extensibility:
+
+```
+src/
+├── domain/           # Core business logic (categories, themes, tools, tags)
+├── security/        # Prompt injection prevention and rate limiting
+├── validation/      # JSON schema validation and data integrity checks
+├── reporting/       # Analysis and reporting utilities
+├── monitoring/      # Logging and metrics collection
+├── io/              # File operations and data parsing
+└── index.ts         # Public API exports
+
+.github/actions/     # GitHub Actions for automated workflows
+├── load-workflow-data/    # Load and format data for CI workflows
+├── format-prompt-data/    # Format data for AI prompts
+├── sync-readme/           # Keep README synchronized
+├── validate-data/         # Validate data files
+└── validate-github-url/   # Validate GitHub URLs
+```
+
+For a detailed architecture overview, see [ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+### Quick Import Guide
+
+The main library exports core functionality for external consumers:
+
+```typescript
+// Domain logic
+import { loadCategories, getActiveThemes, formatThemesForPrompt } from 'awesome-opencode/domain';
+
+// Security & validation
+import { sanitizeForPrompt, validateThemes } from 'awesome-opencode/security';
+
+// Reporting
+import { analyzeThemes, generateSecurityReport } from 'awesome-opencode/reporting';
+
+// Or use the main export
+import * as awesome from 'awesome-opencode';
+```
+
+#### Migrating from Old Import Paths
+
+If you were using the package before the v0.0.1 refactoring, see the [Migration Guide](docs/MIGRATION_GUIDE.md) for old→new import mappings:
+
+- `src/category/` → `src/domain/categories/`
+- `src/theme/` → `src/domain/themes/`
+- `src/bin/analyze-themes.ts` → `src/reporting/theme-analysis/`
+- `src/bin/generate-security-report.ts` → `src/reporting/security-analysis/`
 
 ## Development
 
