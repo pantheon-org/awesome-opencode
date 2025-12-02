@@ -1,5 +1,5 @@
-import { Theme, ThemeCandidate } from '../theme';
-import { ToolInfo } from '../tool';
+import { Theme, ThemeCandidate } from '../domain/themes';
+import { ToolInfo } from '../domain/tools';
 
 /**
  * Generate recommendations based on analysis

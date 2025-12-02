@@ -1,6 +1,11 @@
-import { loadCategories } from '../category';
-import { getTagStats } from '../tag';
-import { discoverThemes, getActiveThemes, updateExistingThemeCounts, getAllTools } from '../theme';
+import { loadCategories } from '../domain/categories';
+import { getTagStats } from '../domain/tags';
+import {
+  discoverThemes,
+  getActiveThemes,
+  updateExistingThemeCounts,
+  getAllTools,
+} from '../domain/themes';
 import { displayExistingThemes } from './display-existing-themes';
 import { displayHighConfidenceThemes } from './display-high-confidence-themes';
 import { saveReportToFile } from './save-report-to-file';

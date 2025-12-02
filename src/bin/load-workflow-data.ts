@@ -8,8 +8,8 @@
  *   bun run src/bin/load-workflow-data.ts load-prompt  # For triage-submission workflow
  */
 
-import { formatCategoriesForPrompt } from '../category';
-import { formatThemesForPrompt } from '../theme';
+import { formatCategoriesForPrompt } from '../domain/categories';
+import { formatThemesForPrompt } from '../domain/themes';
 import { validateCategoriesFile, validateThemesFile } from '../validation';
 import { readFileSync, appendFileSync } from 'fs';
 import { join } from 'path';

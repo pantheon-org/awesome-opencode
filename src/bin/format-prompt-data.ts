@@ -8,8 +8,8 @@
  *   bun run src/bin/format-prompt-data.ts prompt <filename> # Output prompt template
  */
 
-import { formatCategoriesForPrompt } from '../category';
-import { formatThemesForPrompt } from '../theme';
+import { formatCategoriesForPrompt } from '../domain/categories';
+import { formatThemesForPrompt } from '../domain/themes';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 

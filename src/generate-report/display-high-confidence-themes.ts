@@ -1,4 +1,4 @@
-import { ThemeCandidate } from '../theme';
+import { ThemeCandidate } from '../domain/themes';
 
 /**
  * Display discovered themes with high confidence

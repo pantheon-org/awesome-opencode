@@ -10,8 +10,8 @@
 
 import { readFileSync, appendFileSync } from 'fs';
 import { join } from 'path';
-import { formatCategoriesForPrompt } from '../../../src/category/format-categories-for-prompt';
-import { formatThemesForPrompt } from '../../../src/theme/format-themes-for-prompt';
+import { formatCategoriesForPrompt } from '../../../src/domain/categories/format-categories-for-prompt';
+import { formatThemesForPrompt } from '../../../src/domain/themes/format-themes-for-prompt';
 import { validateCategoriesFile, validateThemesFile } from '../../../src/validation';
 import type { WorkflowDataInput, WorkflowDataOutput } from './types';
 

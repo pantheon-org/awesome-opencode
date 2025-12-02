@@ -10,8 +10,8 @@
 
 import { readFileSync, writeFileSync, appendFileSync } from 'fs';
 import { join } from 'path';
-import { loadCategories } from '../../../src/category';
-import { getActiveThemes } from '../../../src/theme';
+import { loadCategories } from '../../../src/domain/categories';
+import { getActiveThemes } from '../../../src/domain/themes';
 import type { SyncReadmeOutput } from './types';
 
 const GITHUB_OUTPUT = process.env.GITHUB_OUTPUT;

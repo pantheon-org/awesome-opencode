@@ -1,4 +1,4 @@
-import { getSuggestedTags } from '../../theme';
+import { getSuggestedTags } from '../../themes';
 import { TagValidationResult } from '../types';
 import { validateTag } from './validate-tag';
 

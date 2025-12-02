@@ -1,6 +1,6 @@
-import { ToolMetadata } from '../../tool';
+import { ToolMetadata } from '../../tools';
 import { getAllTools } from './get-all-tools';
-import { normalizeTag } from '../../tag/normalize-tag';
+import { normalizeTag } from '../../tags/normalize-tag';
 
 /**
  * Find tools sharing one or more tags

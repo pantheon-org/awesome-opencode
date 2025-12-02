@@ -1,5 +1,5 @@
 import { ToolMetadata } from '../types';
-import { parseFrontmatter } from '../../tag/parse-frontmatter';
+import { parseFrontmatter } from '../../tags/parse-frontmatter';
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';

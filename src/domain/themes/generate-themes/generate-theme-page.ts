@@ -1,5 +1,5 @@
 import type { Theme } from '../types';
-import type { ToolInfo } from '../../tool';
+import type { ToolInfo } from '../../tools';
 
 /**
  * Generate frontmatter section

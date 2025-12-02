@@ -2,7 +2,7 @@ import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadThemes } from '../load-themes';
 import { getAllTools } from '../get-all-tools';
-import { getToolsForTheme } from '../../tool';
+import { getToolsForTheme } from '../../tools';
 import { getRelatedThemes } from '../get-themes';
 import { generateThemePage } from './generate-theme-page';
 

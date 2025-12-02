@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'path';
-import { ThemeCandidate } from '../theme';
-import { ToolInfo } from '../tool';
+import { ThemeCandidate } from '../domain/themes';
+import { ToolInfo } from '../domain/tools';
 import { AnalysisReport } from './types';
 
 /**
