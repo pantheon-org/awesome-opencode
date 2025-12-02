@@ -49,6 +49,7 @@ data/security-logs/
 !.context/DEPENDENCY_MAP.md
 
 # Github
+!.github/actions/
 !.github/ISSUE_TEMPLATE/submit-tool.yml
 !.github/prompts/categorize-tool.md
 !.github/prompts/triage-relevance.md

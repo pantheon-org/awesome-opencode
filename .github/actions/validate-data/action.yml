@@ -1,0 +1,31 @@
+name: Validate Data
+description: Validates data files (categories.json, themes.json) against JSON schemas
+
+outputs:
+  valid:
+    description: Whether all data files are valid
+    value: ${{ steps.validate-data.outputs.valid }}
+
+  results:
+    description: Detailed validation results for each file
+    value: ${{ steps.validate-data.outputs.results }}
+
+  total_duration:
+    description: Total validation time in milliseconds
+    value: ${{ steps.validate-data.outputs.total_duration }}
+
+  error_message:
+    description: Error message if validation failed
+    value: ${{ steps.validate-data.outputs.error_message }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+
+    - name: Validate data
+      id: validate-data
+      shell: bash
+      run: |
+        bun run .github/actions/validate-data/index.ts

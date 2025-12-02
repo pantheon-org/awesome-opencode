@@ -1,0 +1,31 @@
+name: Sync README
+description: Updates README.md with current categories and themes from data files
+
+outputs:
+  success:
+    description: Whether the README was successfully updated
+    value: ${{ steps.sync-readme.outputs.success }}
+
+  themes_count:
+    description: Number of themes processed
+    value: ${{ steps.sync-readme.outputs.themes_count }}
+
+  categories_count:
+    description: Number of categories processed
+    value: ${{ steps.sync-readme.outputs.categories_count }}
+
+  message:
+    description: Summary message about the sync operation
+    value: ${{ steps.sync-readme.outputs.message }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+
+    - name: Sync README
+      id: sync-readme
+      shell: bash
+      run: |
+        bun run .github/actions/sync-readme/index.ts
