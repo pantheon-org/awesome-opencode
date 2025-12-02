@@ -2,7 +2,7 @@
 theme_id: developer-productivity
 status: active
 tool_count: 0
-last_updated: 2025-11-25
+last_updated: 2025-12-02
 ---
 
 # Developer Productivity
@@ -11,7 +11,7 @@ Tools focused on streamlining development workflows, reducing manual tasks, and 
 
 ## Tools
 
-_No tools have been added to this theme yet._
+*No tools have been added to this theme yet.*
 
 ## Keywords
 
@@ -23,4 +23,4 @@ _No tools have been added to this theme yet._
 
 ---
 
-_This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)_
+*This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)*

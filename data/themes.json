@@ -11,7 +11,10 @@
         "autocomplete",
         "copilot"
       ],
-      "categories": ["ai-coding-assistants", "code-analysis-quality"],
+      "categories": [
+        "ai-coding-assistants",
+        "code-analysis-quality"
+      ],
       "status": "active",
       "metadata": {
         "auto_discovered": false,
@@ -24,8 +27,18 @@
       "id": "developer-productivity",
       "name": "Developer Productivity",
       "description": "Tools focused on streamlining development workflows, reducing manual tasks, and accelerating software delivery.",
-      "keywords": ["automation", "workflow", "efficiency", "productivity", "devops"],
-      "categories": ["development-automation", "ide-extensions", "testing-tools"],
+      "keywords": [
+        "automation",
+        "workflow",
+        "efficiency",
+        "productivity",
+        "devops"
+      ],
+      "categories": [
+        "development-automation",
+        "ide-extensions",
+        "testing-tools"
+      ],
       "status": "active",
       "metadata": {
         "auto_discovered": false,
@@ -38,8 +51,17 @@
       "id": "code-quality-security",
       "name": "Code Quality & Security",
       "description": "Tools that analyze code for quality issues, security vulnerabilities, and enforce best practices.",
-      "keywords": ["security", "vulnerabilities", "static-analysis", "linting", "code-review"],
-      "categories": ["code-analysis-quality", "testing-tools"],
+      "keywords": [
+        "security",
+        "vulnerabilities",
+        "static-analysis",
+        "linting",
+        "code-review"
+      ],
+      "categories": [
+        "code-analysis-quality",
+        "testing-tools"
+      ],
       "status": "active",
       "metadata": {
         "auto_discovered": false,
@@ -77,5 +99,9 @@
     "monitoring",
     "logging"
   ],
-  "seed_themes": ["ai-powered-development", "developer-productivity", "code-quality-security"]
+  "seed_themes": [
+    "ai-powered-development",
+    "developer-productivity",
+    "code-quality-security"
+  ]
 }

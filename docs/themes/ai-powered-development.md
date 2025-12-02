@@ -2,7 +2,7 @@
 theme_id: ai-powered-development
 status: active
 tool_count: 0
-last_updated: 2025-11-25
+last_updated: 2025-12-02
 ---
 
 # AI-Powered Development
@@ -11,7 +11,7 @@ Tools that leverage artificial intelligence and machine learning to enhance codi
 
 ## Tools
 
-_No tools have been added to this theme yet._
+*No tools have been added to this theme yet.*
 
 ## Keywords
 
@@ -23,4 +23,4 @@ _No tools have been added to this theme yet._
 
 ---
 
-_This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)_
+*This theme page is automatically generated. [Edit theme metadata](../../data/themes.json)*
