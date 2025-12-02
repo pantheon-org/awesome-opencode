@@ -1,0 +1,28 @@
+name: Format Prompt Data
+description: Formats data for safe use in AI prompts with sanitization and XML wrapping
+
+inputs:
+  raw-data:
+    description: Raw data to format (JSON string or plain text)
+    required: false
+    default: ''
+
+outputs:
+  formatted_data:
+    description: Formatted and sanitized data ready for AI prompts
+    value: ${{ steps.format-data.outputs.formatted_data }}
+
+  wrapped_data:
+    description: XML-wrapped formatted data for safe prompt injection prevention
+    value: ${{ steps.format-data.outputs.wrapped_data }}
+
+runs:
+  using: composite
+  steps:
+    - name: Format data
+      id: format-data
+      shell: bash
+      env:
+        INPUT_RAW_DATA: ${{ inputs.raw-data }}
+      run: |
+        bun run .github/actions/format-prompt-data/index.ts

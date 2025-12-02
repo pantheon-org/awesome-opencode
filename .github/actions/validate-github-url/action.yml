@@ -1,0 +1,42 @@
+name: Validate GitHub URL
+description: Validates GitHub URLs from workflow inputs using security module
+
+inputs:
+  url:
+    description: GitHub URL to validate
+    required: true
+
+outputs:
+  valid:
+    description: Whether the URL is valid
+    value: ${{ steps.validate-url.outputs.valid }}
+
+  sanitized_url:
+    description: The sanitized/validated URL
+    value: ${{ steps.validate-url.outputs.sanitized_url }}
+
+  owner:
+    description: Extracted repository owner
+    value: ${{ steps.validate-url.outputs.owner }}
+
+  repo:
+    description: Extracted repository name
+    value: ${{ steps.validate-url.outputs.repo }}
+
+  error:
+    description: Validation error message if invalid
+    value: ${{ steps.validate-url.outputs.error }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+
+    - name: Validate GitHub URL
+      id: validate-url
+      shell: bash
+      env:
+        INPUT_URL: ${{ inputs.url }}
+      run: |
+        bun run .github/actions/validate-github-url/index.ts

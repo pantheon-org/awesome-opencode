@@ -1,0 +1,45 @@
+name: Load Workflow Data
+description: Loads workflow data (prompts, configuration) from src/ modules
+
+inputs:
+  data-type:
+    description: Type of data to load (prompt, config, template)
+    required: false
+    default: 'prompt'
+
+outputs:
+  data:
+    description: Loaded data content
+    value: ${{ steps.load-data.outputs.data }}
+
+  prompt:
+    description: Loaded prompt template
+    value: ${{ steps.load-data.outputs.prompt }}
+
+  categories:
+    description: Serialized categories JSON
+    value: ${{ steps.load-data.outputs.categories }}
+
+  categories_prompt:
+    description: Categories formatted for prompt injection prevention
+    value: ${{ steps.load-data.outputs.categories_prompt }}
+
+  themes_prompt:
+    description: Themes formatted for prompt injection prevention
+    value: ${{ steps.load-data.outputs.themes_prompt }}
+
+  prompt_template:
+    description: Full prompt template content
+    value: ${{ steps.load-data.outputs.prompt_template }}
+
+runs:
+  using: composite
+  steps:
+    - name: Load data
+      id: load-data
+      shell: bash
+      env:
+        INPUT_DATA_TYPE: ${{ inputs.data-type }}
+        GITHUB_OUTPUT: ${{ steps.load-data.outputs }}
+      run: |
+        bun run .github/actions/load-workflow-data/index.ts ${{ inputs.data-type }}
