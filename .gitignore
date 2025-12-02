@@ -53,8 +53,11 @@ data/security-logs/
 !.github/prompts/categorize-tool.md
 !.github/prompts/triage-relevance.md
 !.github/scripts/post-categorization-comment.cjs
+!.github/scripts/post-categorization-comment.ts
 !.github/scripts/post-triage-comment.cjs
+!.github/scripts/post-triage-comment.ts
 !.github/scripts/post-validation-comment.cjs
+!.github/scripts/post-validation-comment.ts
 !.github/scripts/check-repo-config.cjs
 !.github/workflows/categorize-tool.yml
 !.github/workflows/opencode.yml
