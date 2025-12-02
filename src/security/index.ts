@@ -14,6 +14,16 @@ export {
   detectInjectionAttempt,
 } from './sanitize-ai-input';
 
+// GitHub URL validation exports
+export {
+  sanitizeGitHubUrl as sanitizeGitHubUrlStrict,
+  isValidGitHubUrl,
+  extractRepoInfo,
+  filterValidGitHubUrls,
+  extractGitHubUrls,
+  type GitHubUrlValidationResult,
+} from './github-url';
+
 // Prompt builder exports
 export {
   SafePromptBuilder,
